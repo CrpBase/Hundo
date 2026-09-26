@@ -329,6 +329,11 @@ button{cursor:pointer}
 .ach.lock .e{filter:grayscale(1);opacity:.35}
 .ach.lock .t{color:var(--dim)}
 .ach.got{background-image:radial-gradient(120% 90% at 50% 0%,color-mix(in srgb,var(--accent) 22%,transparent),transparent 70%)}
+.ach.got[data-tier]{background-image:radial-gradient(120% 90% at 50% 0%,color-mix(in srgb,var(--tier) 30%,transparent),transparent 72%)}
+.ach[data-tier="1"]{--tier:#D08A4E} .ach[data-tier="2"]{--tier:#B9C4D0} .ach[data-tier="3"]{--tier:#FFC940}
+.ach.got[data-tier] .t{color:color-mix(in srgb,var(--tier) 70%,var(--text))}
+.hach-h{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;margin:0 0 8px 2px}
+.hach-h small{font-size:12px;font-weight:500;color:var(--faint);margin-left:auto}
 .ach .pb{width:70%;height:3px;border-radius:2px;background:var(--soft);margin-top:3px;overflow:hidden}
 .ach .pb i{display:block;height:100%;background:var(--accent);border-radius:2px}
 .ach-t{font-size:22px;font-weight:700;letter-spacing:-.02em;margin:-6px 0 8px;color:var(--text)}
@@ -382,7 +387,7 @@ details.how li b{color:var(--text);font-weight:600}
     <div class="gate-sub">Сто днів, одна сітка</div>
     <input class="nick" id="nick" placeholder="нік" autocapitalize="off" autocorrect="off" spellcheck="false">
     <button class="go" id="enter">Увійти</button>
-    <div class="build">build 22</div>
+    <div class="build">build 23</div>
   </div>
 </div>
 
@@ -1310,9 +1315,22 @@ function achCtx(){
   const best=Math.max(0,...ms.map(m=>Math.max(bestStreak(m.id),streak(m.id))));
   return {best,full,day:dayIndex()+1,moods,notes,steps,back,early,balance,perfect,detox,again:S.history.length>0};
 }
+const TIERS=[7,30,100];
+function habitTotal(h){
+  let n=0; const idx=Math.min(dayIndex(),99);
+  for(let i=0;i<=idx;i++){ const k=dateKey(i); if(!isRest(k) && isDone(h,k)) n++; }
+  return n;
+}
+function personalAch(){
+  const out=[];
+  S.habits.forEach(h=>{ const n=habitTotal(h);
+    TIERS.forEach((t,j)=>out.push({id:`h:${h.id}:${t}`, h, tier:j+1, goal:t, n,
+      e:h.emoji||"✓", t:`${h.name} · ${t} днів`, d:`${t} днів з цією звичкою`, p:()=>n/t})); });
+  return out;
+}
 function checkAch(){
   if($("#app").hidden) return;
-  const c=achCtx(), fresh=ACH.filter(a=>!S.ach[a.id] && a.p(c)>=1);
+  const c=achCtx(), fresh=[...ACH,...personalAch()].filter(a=>!S.ach[a.id] && a.p(c)>=1);
   if(!fresh.length) return;
   fresh.forEach(a=>S.ach[a.id]=today()); S.achNew=true; save(); avatarDot();
   if(cur.n===5) drawProfile();
@@ -1336,18 +1354,31 @@ function habitOptions(sel){
   return `<option value="">не підключено</option>`+S.habits.map(h=>`<option value="${h.id}"${h.id===sel?" selected":""}>${esc((h.emoji?h.emoji+" ":"")+h.name)} · ${esc(modeName(h.mode))}</option>`).join("");
 }
 function drawProfile(){
-  const c=achCtx(), got=ACH.filter(a=>S.ach[a.id]).length, I=S.int, td=S.days[today()]||{};
+  const c=achCtx(), pa=personalAch(), all=[...ACH,...pa], got=all.filter(a=>S.ach[a.id]).length, I=S.int, td=S.days[today()]||{};
   let html=`<div class="prof-hero"><div class="avatar">${esc(nick[0]?.toUpperCase()||"?")}</div>
       <div><b>${esc(nick)}</b><span>Челендж ${S.round} · день ${Math.min(dayIndex()+1,100)} зі 100</span></div></div>
     <div class="kpis">
       <div class="kpi"><b>${c.best}</b><span>найкраща серія</span></div>
       <div class="kpi"><b>${c.full}</b><span>повних днів</span></div>
-      <div class="kpi"><b>${got}<span style="font-size:15px;color:var(--faint)">/${ACH.length}</span></b><span>ачівок</span></div></div>
+      <div class="kpi"><b>${got}<span style="font-size:15px;color:var(--faint)">/${all.length}</span></b><span>ачівок</span></div></div>
     <p class="h">Ачівки</p><div class="achs">`;
   html+=ACH.map(a=>{ const p=Math.min(1,a.p(c)), ok=!!S.ach[a.id];
     return `<div class="ach ${ok?"got":"lock"}"><div class="e">${a.e}</div><div class="t">${esc(a.t)}</div><div class="d">${esc(a.d)}</div>
       ${!ok && p>0 && p<1 ? `<div class="pb"><i style="width:${p*100}%"></i></div>`:""}</div>`; }).join("");
-  html+=`</div>
+  html+=`</div>`;
+  if(S.habits.length){
+    html+=`<p class="h">Твої звички</p>`;
+    S.modes.forEach(m=>{ habitsOf(m.id).forEach(hb=>{
+      const tiles=pa.filter(a=>a.h===hb), n=tiles[0].n;
+      html+=`<div class="hach-h">${hb.emoji?esc(hb.emoji)+" ":""}${esc(hb.name)}<small>${n} ${n%10===1&&n%100!==11?"день":(n%10>=2&&n%10<=4&&(n%100<12||n%100>14))?"дні":"днів"}${S.modes.length>1?" · "+esc(m.name):""}</small></div><div class="achs" style="margin-bottom:18px">`;
+      html+=tiles.map(a=>{ const ok=!!S.ach[a.id], p=Math.min(1,a.n/a.goal);
+        return `<div class="ach ${ok?"got":"lock"}" data-tier="${a.tier}"><div class="e">${esc(a.e)}</div><div class="t">${a.goal} днів</div>
+          <div class="d">${ok?"отримано":Math.min(a.n,a.goal)+" / "+a.goal}</div>${!ok&&p>0?`<div class="pb"><i style="width:${p*100}%"></i></div>`:""}</div>`; }).join("");
+      html+=`</div>`;
+    }); });
+    html+=`<div style="height:12px"></div>`;
+  }
+  html+=`
     <p class="h">Режими</p><div class="pcard">`;
   html+=S.modes.map(m=>`<div class="prow"><div>${esc(m.name)}<small>${habitsOf(m.id).length} звичок · серія ${streak(m.id)}</small></div>
       <button class="edit" data-mode="${m.id}">Змінити</button></div>`).join("");
