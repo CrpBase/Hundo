@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="uk" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#000000">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&display=swap" rel="stylesheet">
+<title>100</title>
+<style>
+:root{
+  --bg:#000000; --surface:#141416; --surface-2:#1E1E22;
+  --soft:rgba(255,255,255,.06); --stroke:rgba(255,255,255,.22);
+  --text:#FFFFFF; --dim:rgba(235,235,245,.58); --faint:rgba(235,235,245,.28);
+  --accent:#FFB340; --on-accent:#1A1200; --green:#34C759; --red:#FF453A; --blue:#5AC8FA;
+  --ring:#FFFFFF; --tip-bg:#25252A;
+  --card-hi:rgba(255,255,255,.055); --card-grad:rgba(255,255,255,.035); --glow-op:.55;
+  --ease:cubic-bezier(.32,.72,0,1); --spring:cubic-bezier(.34,1.4,.64,1); --pad:20px;
+}
+html[data-theme=light]{
+  --bg:#F2F2F7; --surface:#FFFFFF; --surface-2:#EDEDF2;
+  --soft:rgba(0,0,0,.055); --stroke:rgba(0,0,0,.2);
+  --text:#000000; --dim:rgba(60,60,67,.62); --faint:rgba(60,60,67,.32);
+  --ring:#000000; --tip-bg:#FFFFFF; --green:#28A745; --blue:#0A84FF;
+  --card-hi:rgba(255,255,255,.9); --card-grad:rgba(0,0,0,.015); --glow-op:.5;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html,body{height:100%}
+html{transition:background .4s}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,sans-serif;
+  font-optical-sizing:auto;font-feature-settings:"cv11","tnum";
+  font-size:17px;line-height:1.4;letter-spacing:-.011em;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  overscroll-behavior-y:none;transition:background .4s,color .3s;
+}
+#bg{position:fixed;inset:0;z-index:0;pointer-events:none;background:var(--bg);transition:background .4s}
+#bg::after{content:"";position:absolute;inset:0;opacity:var(--glow-op);
+  background:
+    radial-gradient(70vmax 70vmax at 10% -12%, color-mix(in srgb,var(--glow,#6E6E80) 60%,transparent), transparent 62%),
+    radial-gradient(50vmax 50vmax at 105% 28%, color-mix(in srgb,var(--accent) 38%,transparent), transparent 62%)}
+#app{position:relative;z-index:1}
+html,body{background:var(--bg)}
+button,input,textarea{font:inherit;color:inherit;background:none;border:none;outline:none;letter-spacing:inherit}
+button{cursor:pointer}
+.shell{max-width:480px;margin:0 auto;padding:0 var(--pad) calc(env(safe-area-inset-bottom) + 56px)}
+
+/* вхід */
+#gate{position:fixed;inset:0;background:var(--bg);z-index:60;display:flex;align-items:center;justify-content:center;padding:24px}
+#gate.hide{opacity:0;pointer-events:none;transition:opacity .5s var(--ease)}
+.gate-in{width:100%;max-width:300px;text-align:center;animation:rise .8s var(--ease) both}
+.gate-mark{font-size:84px;font-weight:800;letter-spacing:-.06em;line-height:1;color:var(--accent);margin-bottom:8px}
+.gate-sub{color:var(--dim);font-size:15px;margin-bottom:38px}
+.nick{width:100%;text-align:center;font-size:22px;font-weight:600;padding:16px 12px;background-color:var(--surface);
+  border-radius:16px;border:1.5px solid transparent;transition:border-color .25s var(--ease)}
+.nick:focus{border-color:var(--accent)}
+.nick::placeholder{color:var(--faint);font-weight:400}
+.nick:-webkit-autofill,.nick:-webkit-autofill:focus{-webkit-text-fill-color:var(--text);
+  -webkit-box-shadow:0 0 0 1000px var(--surface) inset;caret-color:var(--text);transition:background-color 9999s}
+.go{width:100%;margin-top:12px;padding:16px;border-radius:16px;background:var(--accent);color:var(--on-accent);
+  font-weight:600;font-size:17px;transition:transform .25s var(--spring)}
+.go:active{transform:scale(.97)}
+.build{margin-top:22px;font-size:11px;color:var(--faint)}
+
+/* оверлей */
+#fact{position:fixed;inset:0;z-index:55;background:color-mix(in srgb,var(--bg) 84%,transparent);
+  backdrop-filter:blur(26px) saturate(160%);-webkit-backdrop-filter:blur(26px) saturate(160%);
+  display:flex;flex-direction:column;overflow-y:auto;padding:32px 28px;transition:opacity .45s var(--ease)}
+#fact.hide{opacity:0;pointer-events:none}
+.fact-in{max-width:340px;width:100%;margin:auto;text-align:center;animation:rise .8s var(--ease) .1s both}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.fact-n{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-bottom:26px}
+.fact-t{font-size:28px;font-weight:700;letter-spacing:-.035em;line-height:1.15;margin-bottom:14px}
+.fact-t.big{font-size:72px;letter-spacing:-.06em;color:var(--accent)}
+.fact-s{font-size:17px;color:var(--dim);line-height:1.5;margin-bottom:36px;text-wrap:pretty}
+.fact-go{padding:14px 40px;border-radius:14px;background:var(--surface-2);font-size:16px;font-weight:550;transition:transform .25s var(--spring)}
+.fact-go:active{transform:scale(.96)}
+.wk{display:flex;gap:7px;justify-content:center;margin:2px 0 22px}
+.wk i{width:28px;height:28px;border-radius:7px;display:block;background:var(--soft)}
+.stat{font-size:15px;color:var(--dim);line-height:1.7}
+.stat b{color:var(--text);font-weight:600}
+#confetti{position:fixed;inset:0;z-index:58;pointer-events:none}
+#confetti i{position:absolute;width:8px;height:12px;border-radius:2px}
+
+/* шапка */
+.hdr{position:sticky;top:0;z-index:20;padding:calc(env(safe-area-inset-top) + 14px) var(--pad) 26px;
+  background:linear-gradient(180deg,var(--bg) 0%,color-mix(in srgb,var(--bg) 82%,transparent) 60%,transparent 100%);
+  backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);
+  -webkit-mask-image:linear-gradient(#000 72%,transparent);mask-image:linear-gradient(#000 72%,transparent)}
+.hdr-in{max-width:440px;margin:0 auto}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.today{font-size:15px;color:var(--dim)}
+.who{font-size:15px;color:var(--faint);display:flex;align-items:center;gap:12px}
+.ib{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;color:var(--dim);background:var(--soft);
+  transition:transform .3s var(--spring),background .3s}
+.ib:active{transform:scale(.9)}
+.ib svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mring{width:30px;height:30px;transform:rotate(-90deg);cursor:pointer}
+.mring circle{fill:none;stroke-width:3;stroke-linecap:round}
+.mring .bg{stroke:var(--soft)}
+.mring .fg{stroke-dasharray:59.7;stroke-dashoffset:59.7;transition:stroke-dashoffset .7s var(--ease),stroke .5s}
+.seg{position:relative;display:grid;grid-template-columns:repeat(4,1fr);background:rgba(118,118,128,.16);border-radius:11px;padding:2px}
+.seg-pill{position:absolute;top:2px;bottom:2px;width:calc((100% - 4px)/4);background:var(--surface-2);
+  border-radius:9px;box-shadow:0 3px 8px rgba(0,0,0,.28);transition:transform .42s var(--spring)}
+.seg button{position:relative;z-index:1;padding:8px 0;font-size:13.5px;font-weight:600;color:var(--dim);transition:color .3s}
+.seg button[aria-selected="true"]{color:var(--text)}
+
+.panel{display:none;padding-top:6px}
+.panel.on{display:block;animation:fwd .42s var(--ease)}
+.panel.on.back{animation:bwd .42s var(--ease)}
+@keyframes fwd{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:none}}
+@keyframes bwd{from{opacity:0;transform:translateX(-22px)}to{opacity:1;transform:none}}
+
+/* челендж */
+.count{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+.count b{font-size:60px;font-weight:800;letter-spacing:-.05em;line-height:.86;
+  background:linear-gradient(180deg,var(--text) 30%,var(--dim));-webkit-background-clip:text;background-clip:text;color:transparent}
+.count span{font-size:15px;color:var(--dim);align-self:flex-end;padding-bottom:4px;margin-left:-4px}
+.ring{width:56px;height:56px;margin-left:6px;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:5;stroke-linecap:round}
+.ring .bg{stroke:var(--soft)}
+.ring .fg{stroke-dasharray:119.4;stroke-dashoffset:119.4;transition:stroke-dashoffset .8s var(--ease),stroke .5s}
+.streak{margin-left:auto;text-align:right}
+.streak b{display:inline-block;font-size:26px;font-weight:700;letter-spacing:-.03em;line-height:1;color:var(--green);
+  text-shadow:0 0 18px color-mix(in srgb,var(--green) 55%,transparent)}
+.streak b.pop{animation:pop .5s var(--spring)}
+.streak i{display:block;font-style:normal;font-size:12px;color:var(--faint);margin-top:4px}
+
+.grid{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;margin-bottom:14px;padding:3px}
+.cell{position:relative;aspect-ratio:1;border-radius:5px;background:var(--soft);overflow:hidden;padding:0;
+  transition:transform .25s var(--spring),box-shadow .5s var(--ease)}
+.cell .fill{position:absolute;left:0;right:0;bottom:0;height:0;transition:height .6s var(--ease),background .4s}
+.cell.zero{background:rgba(255,69,58,.16)}
+.cell.future{background:color-mix(in srgb,var(--soft) 50%,transparent)}
+.cell.rest{background:repeating-linear-gradient(135deg,var(--soft) 0 3px,transparent 3px 7px)}
+.cell:hover{transform:scale(1.2);z-index:2}
+.cell.today{outline:2px solid var(--ring);outline-offset:2.5px;animation:breathe 2.8s ease-in-out infinite}
+.cell.enter{animation:cellIn .55s var(--ease) both}
+.cell.today.enter{animation:cellIn .55s var(--ease) both,breathe 2.8s ease-in-out .6s infinite}
+.cell.wave{animation:wave .55s var(--spring) both}
+.cell.today.wave{animation:wave .55s var(--spring) both,breathe 2.8s ease-in-out .6s infinite}
+@keyframes breathe{0%,100%{outline-color:var(--ring)}50%{outline-color:color-mix(in srgb,var(--ring) 35%,transparent)}}
+@keyframes cellIn{from{opacity:0;transform:scale(.55)}to{opacity:1;transform:none}}
+@keyframes wave{0%{transform:scale(1)}45%{transform:scale(1.34)}100%{transform:scale(1)}}
+.legend{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--faint);margin-bottom:6px}
+.legend .bar{flex:1;height:4px;border-radius:2px;background:linear-gradient(90deg,hsl(4 76% 48%),hsl(45 90% 52%),hsl(142 62% 46%))}
+.share-row{display:flex;justify-content:flex-end;margin-bottom:22px}
+.share-row button{font-size:13px;color:var(--accent);font-weight:550;display:flex;align-items:center;gap:6px}
+.share-row svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* рядки */
+.h{font-size:13px;color:var(--faint);margin:0 0 10px 2px;font-weight:500;display:flex;justify-content:space-between;align-items:center}
+.h button{font-size:13px;color:var(--accent);font-weight:550}
+.card,.week,.task,.dayrow,.daybar,.note,.goal-add input,.sheet,.rowbtn,.datarow button,.nick,.kpi,.srow{
+  background-image:linear-gradient(180deg,var(--card-grad),transparent 55%);box-shadow:inset 0 1px 0 var(--card-hi)}
+.task{display:flex;align-items:center;gap:13px;padding:15px 16px;background-color:var(--surface);border-radius:16px;margin-bottom:8px;
+  transition:transform .3s var(--spring),background .25s}
+.task:active{transform:scale(.985);background-color:var(--surface-2)}
+.box{flex:none;width:28px;height:28px;border-radius:50%;border:2px solid var(--stroke);display:grid;place-items:center;
+  transition:background .3s var(--ease),border-color .3s var(--ease)}
+.task.done .box{background:var(--green);border-color:var(--green);animation:pop .45s var(--spring)}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.24)}100%{transform:scale(1)}}
+.box svg{width:15px;height:15px;stroke:#04140A;stroke-width:2.9;fill:none;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:22;stroke-dashoffset:22;transition:stroke-dashoffset .3s var(--ease) .06s}
+.task.done .box svg{stroke-dashoffset:0}
+.emo{flex:none;width:22px;text-align:center;font-size:18px;line-height:1}
+.task-name{flex:1;font-size:16px;transition:color .3s;min-width:0}
+.task.done .task-name{color:var(--dim)}
+.task-streak{font-size:13px;color:var(--faint);flex:none}
+.tools{display:none;gap:3px;flex:none}
+.editing .tools{display:flex}
+.editing .task-streak,.editing .box{display:none}
+.tools button{width:32px;height:32px;border-radius:9px;background:var(--surface-2);color:var(--dim);font-size:15px;line-height:1;
+  display:grid;place-items:center;transition:transform .2s var(--spring)}
+.tools button:active{transform:scale(.9)}
+.rowbtn{width:100%;padding:14px;border-radius:16px;background-color:var(--surface);color:var(--dim);font-size:15px;margin-top:4px;transition:transform .3s var(--spring)}
+.rowbtn:active{transform:scale(.985)}
+.switch{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background-color:var(--surface);border-radius:16px;margin-bottom:8px}
+.switch small{display:block;font-size:12px;color:var(--faint);margin-top:2px}
+.tog{width:50px;height:30px;border-radius:15px;background:var(--soft);position:relative;transition:background .3s;flex:none}
+.tog::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;
+  box-shadow:0 2px 6px rgba(0,0,0,.3);transition:transform .35s var(--spring)}
+.tog.on{background:var(--blue)}
+.tog.on::after{transform:translateX(20px)}
+
+/* оцінка */
+.daybar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background-color:var(--surface);border-radius:14px;margin-bottom:22px;font-size:15px}
+.daybar button{color:var(--accent);font-size:14px;font-weight:550}
+.mood{display:flex;align-items:flex-end;gap:6px;height:120px;margin-bottom:8px}
+.mood button{flex:1;border-radius:7px;background:var(--soft);transition:background .35s var(--ease),transform .3s var(--spring)}
+.mood button:active{transform:scaleY(1.05)}
+.mood-val{display:flex;justify-content:space-between;color:var(--faint);font-size:13px;margin-bottom:28px}
+.mood-val b{color:var(--text);font-size:15px;font-weight:600}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px}
+.tag{padding:9px 15px;border-radius:20px;background:var(--surface);font-size:14px;color:var(--dim);display:flex;align-items:center;gap:8px;
+  transition:background .25s var(--ease),color .25s var(--ease),transform .25s var(--spring)}
+.tag:active{transform:scale(.94)}
+.tag.on{background:var(--accent);color:var(--on-accent);font-weight:550}
+.tag .x{display:none;font-size:16px;line-height:1;opacity:.6}
+.tags.editing .x{display:inline}
+.note{width:100%;min-height:110px;padding:16px;background-color:var(--surface);border-radius:16px;font-size:16px;resize:none;line-height:1.5;margin-bottom:8px}
+.note::placeholder{color:var(--faint)}
+
+/* дні */
+.week{padding:14px 16px;border-radius:16px;background-color:var(--surface);margin-bottom:8px}
+.week-top{display:flex;justify-content:space-between;font-size:13px;color:var(--faint);margin-bottom:10px}
+.week-top b{color:var(--text);font-weight:600}
+.week-row{display:flex;gap:6px}
+.week-row i{flex:1;aspect-ratio:1;border-radius:6px;background:var(--soft);display:block;transition:background .4s}
+.dayrow{display:flex;align-items:center;gap:12px;padding:12px 14px;background-color:var(--surface);border-radius:14px;margin-bottom:7px;width:100%;text-align:left;transition:transform .3s var(--spring)}
+.dayrow:active{transform:scale(.985)}
+.dayrow .n{flex:none;width:34px;font-size:13px;color:var(--faint)}
+.dayrow .d{flex:none;width:78px;font-size:14px;color:var(--dim)}
+.dayrow .track{flex:1;height:7px;border-radius:4px;background:var(--soft);overflow:hidden}
+.dayrow .track i{display:block;height:100%;border-radius:4px;transition:width .5s var(--ease)}
+.dayrow .m{flex:none;width:34px;text-align:right;font-size:13px;color:var(--faint)}
+
+/* стата */
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:26px}
+.kpi{padding:14px 12px;border-radius:16px;background-color:var(--surface)}
+.kpi b{display:block;font-size:26px;font-weight:700;letter-spacing:-.03em;line-height:1;margin-bottom:6px}
+.kpi span{font-size:12px;color:var(--faint)}
+.spark{width:100%;height:90px;display:block;margin-bottom:6px}
+.spark-cap{display:flex;justify-content:space-between;font-size:12px;color:var(--faint);margin-bottom:28px}
+.srow{background-color:var(--surface);border-radius:16px;margin-bottom:8px;overflow:hidden}
+.srow-h{display:flex;align-items:center;gap:12px;padding:14px 16px;width:100%;text-align:left}
+.srow-h .emo{width:22px}
+.srow-h .nm{flex:1;font-size:15px;min-width:0}
+.srow-h .pct{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
+.srow-bar{height:4px;margin:0 16px 12px;border-radius:2px;background:var(--soft);overflow:hidden}
+.srow-bar i{display:block;height:100%;border-radius:2px}
+.mini{display:none;grid-template-columns:repeat(10,1fr);gap:3px;padding:4px 16px 16px}
+.srow.open .mini{display:grid}
+.mini i{aspect-ratio:1;border-radius:3px;background:var(--soft);display:block}
+.corr{font-size:14px;color:var(--dim);padding:0 16px 14px;line-height:1.5}
+.corr b{color:var(--text)}
+.corr .up{color:var(--green)} .corr .dn{color:var(--red)}
+.tagbar{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:14px}
+.tagbar .t{width:110px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tagbar .b{flex:1;height:8px;border-radius:4px;background:var(--soft);overflow:hidden}
+.tagbar .b i{display:block;height:100%;background:var(--accent);border-radius:4px}
+.tagbar .c{width:26px;text-align:right;color:var(--faint);font-size:13px}
+
+/* цілі */
+.goal-add{display:flex;gap:8px;margin-bottom:12px}
+.goal-add input{flex:1;padding:14px 16px;background-color:var(--surface);border-radius:15px;font-size:15px}
+.goal-add input::placeholder{color:var(--faint)}
+.goal-add button{flex:none;width:50px;border-radius:15px;background:var(--accent);color:var(--on-accent);font-size:24px;transition:transform .25s var(--spring)}
+.goal-add button:active{transform:scale(.92)}
+.gsec{margin-bottom:30px}
+.empty{text-align:center;color:var(--faint);font-size:14px;padding:20px;line-height:1.5}
+.datarow{display:flex;gap:8px}
+.datarow button{flex:1;padding:13px;border-radius:14px;background-color:var(--surface);color:var(--dim);font-size:14px}
+
+/* sheet */
+.sheet-wrap{position:fixed;inset:0;z-index:70}
+.sheet-bg{position:absolute;inset:0;background:rgba(0,0,0,.45);opacity:0;transition:opacity .32s var(--ease)}
+.sheet{position:absolute;left:0;right:0;bottom:0;max-width:480px;margin:0 auto;background-color:var(--surface);
+  border-radius:22px 22px 0 0;padding:16px 20px calc(env(safe-area-inset-bottom) + 20px);transform:translateY(105%);transition:transform .46s var(--spring)}
+.sheet-wrap.open .sheet-bg{opacity:1}
+.sheet-wrap.open .sheet{transform:none}
+.sheet-grab{width:36px;height:5px;border-radius:3px;background:var(--faint);margin:0 auto 16px;opacity:.6}
+.sheet-t{font-size:13px;color:var(--faint);margin:0 0 10px 2px;font-weight:500}
+.sheet-fields{display:flex;gap:8px;margin-bottom:12px}
+.sheet-in{flex:1;font-size:19px;font-weight:550;padding:14px 16px;background:var(--surface-2);border-radius:14px;min-width:0}
+.sheet-ex{width:64px;text-align:center;font-size:22px;padding:14px 0;background:var(--surface-2);border-radius:14px}
+.sheet-row{display:flex;gap:8px}
+.sheet-del{flex:1;padding:14px;border-radius:14px;background:rgba(255,69,58,.14);color:var(--red);font-weight:550;transition:transform .25s var(--spring)}
+.sheet-ok{flex:2;padding:14px;border-radius:14px;background:var(--accent);color:var(--on-accent);font-weight:600;transition:transform .25s var(--spring)}
+.sheet-del:active,.sheet-ok:active{transform:scale(.96)}
+@media (min-width:600px){
+  .sheet{bottom:auto;top:50%;border-radius:22px;transform:translateY(-40%) scale(.96);opacity:0;transition:transform .4s var(--spring),opacity .3s}
+  .sheet-wrap.open .sheet{transform:translateY(-50%);opacity:1}
+  .sheet-grab{display:none}
+}
+
+#tip{position:fixed;z-index:40;background:var(--tip-bg);border-radius:12px;padding:11px 13px;font-size:13px;line-height:1.45;
+  box-shadow:0 12px 34px rgba(0,0,0,.35);pointer-events:none;opacity:0;transform:translateY(4px);transition:opacity .18s,transform .22s var(--ease);max-width:220px}
+#tip.show{opacity:1;transform:none}
+#tip b{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+#tip .r{color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#tip .r.y{color:var(--green)}
+/* режими */
+.modes{display:flex;gap:6px;margin:0 0 18px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.modes::-webkit-scrollbar{display:none}
+.mode{flex:none;padding:7px 15px;border-radius:18px;background:var(--surface);font-size:14px;font-weight:550;color:var(--dim);
+  box-shadow:inset 0 1px 0 var(--card-hi);transition:background .3s var(--ease),color .3s,transform .25s var(--spring)}
+.mode:active{transform:scale(.94)}
+.mode.on{background:var(--text);color:var(--bg)}
+.mode.add{width:34px;padding:7px 0;text-align:center}
+.suggest{padding:18px 16px;border-radius:16px;background-color:var(--surface);box-shadow:inset 0 1px 0 var(--card-hi);margin-bottom:8px}
+.suggest p{margin:0 0 12px;font-size:15px;color:var(--dim);line-height:1.45}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{padding:8px 13px;border-radius:18px;background:var(--surface-2);font-size:14px;color:var(--text);transition:transform .25s var(--spring)}
+.chip:active{transform:scale(.94)}
+
+/* аватар і профіль */
+.avatar{width:30px;height:30px;border-radius:50%;position:relative;display:grid;place-items:center;font-size:14px;font-weight:750;
+  color:#1A1200;background:linear-gradient(140deg,#FFD27A,var(--accent) 45%,#FF7A59);transition:transform .3s var(--spring)}
+.avatar:active{transform:scale(.9)}
+.avatar.dot::after{content:"";position:absolute;top:-1px;right:-1px;width:9px;height:9px;border-radius:50%;background:var(--red);box-shadow:0 0 0 2px var(--bg)}
+.prof-hero{display:flex;align-items:center;gap:16px;margin:4px 0 22px}
+.prof-hero .avatar{width:68px;height:68px;font-size:30px;flex:none}
+.prof-hero b{display:block;font-size:26px;font-weight:750;letter-spacing:-.03em;line-height:1.1}
+.prof-hero span{font-size:14px;color:var(--dim)}
+.achs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:30px}
+.ach{padding:14px 8px 12px;border-radius:16px;background-color:var(--surface);box-shadow:inset 0 1px 0 var(--card-hi);text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;overflow:hidden}
+.ach .e{font-size:30px;line-height:1.1}
+.ach .t{font-size:13px;font-weight:600;line-height:1.2}
+.ach .d{font-size:11px;color:var(--faint);line-height:1.3}
+.ach.lock .e{filter:grayscale(1);opacity:.35}
+.ach.lock .t{color:var(--dim)}
+.ach.got{background-image:radial-gradient(120% 90% at 50% 0%,color-mix(in srgb,var(--accent) 22%,transparent),transparent 70%)}
+.ach .pb{width:70%;height:3px;border-radius:2px;background:var(--soft);margin-top:3px;overflow:hidden}
+.ach .pb i{display:block;height:100%;background:var(--accent);border-radius:2px}
+.ach-t{font-size:22px;font-weight:700;letter-spacing:-.02em;margin:-6px 0 8px;color:var(--text)}
+.pcard{padding:16px;border-radius:16px;background-color:var(--surface);box-shadow:inset 0 1px 0 var(--card-hi);margin-bottom:8px}
+.pcard p{margin:0 0 10px;font-size:14px;color:var(--dim);line-height:1.5}
+.pcard p:last-child{margin-bottom:0}
+.prow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;font-size:15px}
+.prow+.prow{box-shadow:0 -1px 0 var(--soft)}
+.prow small{display:block;font-size:12px;color:var(--faint);margin-top:2px}
+.prow select,.prow input{background:var(--surface-2);border-radius:10px;padding:8px 10px;font-size:14px;color:var(--text);max-width:52%;
+  -webkit-appearance:none;appearance:none;text-align:right}
+.prow input{width:96px}
+.prow .edit{color:var(--accent);font-size:14px;font-weight:550}
+.pbtn{width:100%;padding:14px;border-radius:14px;background-color:var(--surface);box-shadow:inset 0 1px 0 var(--card-hi);
+  font-size:15px;font-weight:550;margin-bottom:8px;transition:transform .25s var(--spring)}
+.pbtn:active{transform:scale(.98)}
+.pbtn.red{color:var(--red)}
+.pbtn.acc{color:var(--accent)}
+.live{display:flex;gap:8px;margin-bottom:12px}
+.live div{flex:1;padding:12px;border-radius:12px;background:var(--surface-2)}
+.live b{display:block;font-size:20px;font-weight:700;letter-spacing:-.02em}
+.live span{font-size:12px;color:var(--faint)}
+details.how{margin-top:6px}
+details.how summary{font-size:14px;color:var(--accent);font-weight:550;cursor:pointer;list-style:none;padding:6px 0}
+details.how summary::-webkit-details-marker{display:none}
+details.how ol{margin:10px 0 4px;padding-left:20px;font-size:14px;color:var(--dim);line-height:1.55}
+details.how li{margin-bottom:6px}
+details.how li b{color:var(--text);font-weight:600}
+.code{position:relative;margin:8px 0 12px}
+.code pre{margin:0;padding:12px 12px 12px;border-radius:12px;background:var(--surface-2);font:12px/1.45 ui-monospace,Menlo,Consolas,monospace;
+  color:var(--dim);white-space:pre-wrap;word-break:break-all;max-height:150px;overflow:auto}
+.code button{position:absolute;top:8px;right:8px;padding:5px 10px;border-radius:8px;background:var(--accent);color:var(--on-accent);font-size:12px;font-weight:600}
+.arch{padding:14px 16px;border-radius:16px;background-color:var(--surface);box-shadow:inset 0 1px 0 var(--card-hi);margin-bottom:8px}
+.arch-top{display:flex;justify-content:space-between;font-size:13px;color:var(--faint);margin-bottom:10px}
+.arch-top b{color:var(--text);font-weight:600}
+.arch .mini{display:grid;padding:0;grid-template-columns:repeat(20,1fr);gap:2px}
+.arch .mini i{border-radius:2px}
+.sheet-d{font-size:15px;color:var(--dim);line-height:1.5;margin:-2px 2px 14px}
+.sheet-ok.red{background:var(--red);color:#fff}
+
+.sync{position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 12px);text-align:center;font-size:12px;color:var(--faint);opacity:0;transition:opacity .4s;pointer-events:none}
+.sync.show{opacity:1}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="gate-in">
+    <div class="gate-mark">100</div>
+    <div class="gate-sub">Сто днів, одна сітка</div>
+    <input class="nick" id="nick" placeholder="нік" autocapitalize="off" autocorrect="off" spellcheck="false">
+    <button class="go" id="enter">Увійти</button>
+    <div class="build">build 19</div>
+  </div>
+</div>
+
+<div id="fact" class="hide" hidden>
+  <div class="fact-in">
+    <div class="fact-n" id="factN"></div>
+    <div class="fact-t" id="factT"></div>
+    <div class="fact-s" id="factS"></div>
+    <button class="fact-go" id="factGo">Почати день</button>
+  </div>
+</div>
+<div id="confetti"></div>
+
+<div id="bg"></div>
+<div id="app" hidden>
+  <div class="hdr"><div class="hdr-in">
+    <div class="top">
+      <div class="today" id="date"></div>
+      <div class="who">
+        <svg class="mring" id="mring" viewBox="0 0 24 24"><circle class="bg" cx="12" cy="12" r="9.5"/><circle class="fg" id="mringFg" cx="12" cy="12" r="9.5"/>
+          <text id="mringLbl" x="12" y="12" transform="rotate(90 12 12)" text-anchor="middle" dominant-baseline="central" font-size="10" font-weight="700">0</text></svg>
+        <button class="ib" id="theme" aria-label="Тема"></button>
+        <button class="avatar" id="who" aria-label="Профіль"></button></div>
+    </div>
+    <div class="seg" role="tablist">
+      <div class="seg-pill" id="pill"></div>
+      <button role="tab" aria-selected="true" data-t="0">Челендж</button>
+      <button role="tab" aria-selected="false" data-t="1">Дні</button>
+      <button role="tab" aria-selected="false" data-t="2">Стата</button>
+      <button role="tab" aria-selected="false" data-t="3">Цілі</button>
+    </div>
+  </div></div>
+
+  <div class="shell">
+  <section class="panel on" data-p="0">
+    <div class="modes" id="modes"></div>
+    <div class="count">
+      <b id="dayNum">1</b><span>зі 100</span>
+      <div class="streak"><b id="streakNum">0</b><i>днів поспіль</i></div>
+    </div>
+    <div class="grid" id="grid"></div>
+    <div class="legend"><span>0</span><div class="bar"></div><span>усе</span></div>
+    <div class="share-row"><button id="share"><svg viewBox="0 0 24 24"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M12 15V3M7 8l5-5 5 5"/></svg>Картинка для сторіс</button></div>
+    <div id="todayBlock"></div>
+  </section>
+
+  <section class="panel" data-p="1">
+    <p class="h">Цей тиждень</p>
+    <div id="weekStrip"></div>
+    <div id="todayRating" style="margin-top:30px"></div>
+    <p class="h" style="margin-top:34px">Історія</p>
+    <div id="days"></div>
+  </section>
+
+  <section class="panel" data-p="2">
+    <div id="stats"></div>
+  </section>
+
+  <section class="panel" data-p="3">
+    <div class="gsec"><p class="h">На тиждень</p>
+      <div class="goal-add"><input data-k="short" placeholder="Коротка ціль"><button data-k="short">+</button></div><div id="g-short"></div></div>
+    <div class="gsec"><p class="h">На місяць</p>
+      <div class="goal-add"><input data-k="mid" placeholder="Середня ціль"><button data-k="mid">+</button></div><div id="g-mid"></div></div>
+    <div class="gsec"><p class="h">На 100 днів</p>
+      <div class="goal-add"><input data-k="long" placeholder="Велика ціль"><button data-k="long">+</button></div><div id="g-long"></div></div>
+  </section>
+
+  <section class="panel" data-p="4">
+    <div class="daybar"><button id="back">← Історія</button><span id="selLabel"></span></div>
+    <div id="detailHabits"></div>
+    <div id="detailRating"></div>
+  </section>
+
+  <section class="panel" data-p="5">
+    <div class="daybar"><button id="profBack">← Назад</button><span>Профіль</span></div>
+    <div id="profTop"></div>
+    <div class="gsec"><p class="h">Дані</p>
+      <div class="datarow"><button id="exp">Експорт</button><button id="imp">Імпорт</button><input type="file" id="impFile" accept="application/json" hidden></div></div>
+    <div id="profArchive"></div>
+    <div class="gsec">
+      <button class="pbtn red" id="restart">Почати челендж заново</button>
+      <button class="pbtn" id="logout">Вийти з ніка</button>
+    </div>
+  </section>
+  </div>
+</div>
+
+<div class="sheet-wrap" id="sheet" hidden>
+  <div class="sheet-bg"></div>
+  <div class="sheet">
+    <div class="sheet-grab"></div>
+    <p class="sheet-t" id="sheetT"></p>
+    <p class="sheet-d" id="sheetD" hidden></p>
+    <div class="sheet-fields" id="sheetF"><input class="sheet-in" id="sheetIn" autocapitalize="sentences"><input class="sheet-ex" id="sheetEx" placeholder="🙂" hidden></div>
+    <div class="sheet-row"><button class="sheet-del" id="sheetDel">Видалити</button><button class="sheet-ok" id="sheetOk">Зберегти</button></div>
+  </div>
+</div>
+
+<div id="tip"></div>
+<div class="sync" id="sync"></div>
+
+<script>
+const FACTS = [
+{t:"Ван Гог", s:"Узяв пензель у 27 і за десять років зробив близько 2100 робіт. За життя визнання майже не мав."},
+{t:"Джоан Роулінг", s:"Рукопис про Гаррі Поттера відхилив десяток видавництв. Bloomsbury узяв його після того, як перший розділ прочитала восьмирічна донька директора."},
+{t:"Стівен Кінг", s:"Викинув чернетку «Керрі» у смітник. Дружина Табіта дістала її й попросила дописати."},
+{t:"Джеймс Дайсон", s:"Зібрав 5127 прототипів пилососа, перш ніж вийшов той, що працював як треба."},
+{t:"Мігель де Сервантес", s:"П'ять років провів у полоні в Алжирі, потім сидів у борговій в'язниці. Перший том «Дон Кіхота» вийшов, коли йому було 57."},
+{t:"Лора Інґоллз Вайлдер", s:"Видала першу книжку у 65. Далі написала ще вісім."},
+{t:"Момофуку Андо", s:"Винайшов локшину швидкого приготування у 48, у сараї на власному подвір'ї, після року щоденних спроб."},
+{t:"Рей Крок", s:"Продавав апарати для молочних коктейлів, коли у 52 вперше побачив ресторан братів Макдональдів."},
+{t:"Стів Джобс", s:"Його звільнили з компанії, яку він заснував, у 30. Повернувся через дванадцять років."},
+{t:"Волт Дісней", s:"У 21 збанкрутував із першою студією Laugh-O-Gram і поїхав у Голлівуд з валізою малюнків."},
+{t:"Опра Вінфрі", s:"Її зняли з посади ведучої вечірніх новин і перевели на денне ток-шоу — формат, у якому вона стала найвідомішою в світі."},
+{t:"Майкл Джордан", s:"Не потрапив до основного складу шкільної команди й цілий сезон грав за другий."},
+{t:"Ейнштейн і математика", s:"Він її не провалював. У 16 не склав вступний іспит до Цюрихського політехнікуму через мови й природничі, довчився рік і вступив."},
+{t:"Стівен Гокінґ", s:"Діагноз у 21 і прогноз на два роки життя. Прожив ще 55 і встиг переписати уявлення про чорні діри."},
+{t:"Роджер Баністер", s:"У 1954 пробіг милю швидше чотирьох хвилин, що вважалося неможливим. Через 46 днів рекорд побили."},
+{t:"Дік Фосбері", s:"Виграв Олімпіаду 1968, стрибаючи через планку спиною вперед. З нього сміялися; сьогодні так стрибають усі."},
+{t:"Джулія Чайлд", s:"Навчилася готувати у 37, видала першу книжку у 49, вийшла в телеефір у 51."},
+{t:"Морґан Фріман", s:"Першу велику кінороль отримав у 50, до того грав у театрі та дитячій телепрограмі."},
+{t:"Енг Лі", s:"Шість років сидів удома без роботи, поки дружина утримувала родину. Потім зняв фільми, що принесли йому два «Оскари» за режисуру."},
+{t:"Хаяо Міядзакі", s:"Заснував студію Ghibli у 44, коли більшість аніматорів його віку вже керували чужими проєктами."},
+{t:"Віра Ванг", s:"Не потрапила в олімпійську збірну з фігурного катання, двадцять років пропрацювала у Vogue і відкрила власний бренд у 40."},
+{t:"Марія Склодовська-Кюрі", s:"Вчилася в підпільному «летючому університеті» у Варшаві, бо жінок не брали. Дві Нобелівські премії з різних наук."},
+{t:"Бетховен", s:"Почав глухнути у 26. Дев'яту симфонію дописав, уже не чуючи жодної ноти."},
+{t:"Анрі Матісс", s:"Після операції не міг стояти за мольбертом і почав вирізати композиції з кольорового паперу. Ці вирізки стали окремою епохою в його творчості."},
+{t:"Клод Моне", s:"Писав «Латаття» з катарактою, майже не розрізняючи кольори. Полотна цього періоду вважають одними з найсильніших у нього."},
+{t:"Фріда Кало", s:"Почала малювати в ліжку після аварії, з дзеркалом, закріпленим над головою."},
+{t:"Вілма Рудольф", s:"У дитинстві перехворіла на поліомієліт і ходила в ортезі. У 1960-му взяла три золоті медалі Олімпіади в Римі."},
+{t:"Малала Юсафзай", s:"Отримала Нобелівську премію миру у 17 — наймолодшою лауреаткою за всю історію."},
+{t:"Тарас Шевченко", s:"До 24 років був кріпаком. Його викупили за гроші від лотереї, у якій розіграли портрет Жуковського."},
+{t:"Катерина Білокур", s:"Ніколи не вчилася малювати. Пензлі робила з котячої шерсті, фарби готувала сама, полотно натягувала на саморобний підрамник."},
+{t:"Архип Куїнджі", s:"Двічі провалив вступ до Академії мистецтв. Прийняли з третього разу."},
+{t:"Соломія Крушельницька", s:"Після провалу прем'єри «Мадам Батерфляй» Пуччіні переписав оперу, і саме вона заспівала нову редакцію. Опера стала класикою."},
+{t:"Ігор Сікорський", s:"Його перші гелікоптери не відривалися від землі. Робочу машину він підняв у повітря майже через тридцять років."},
+{t:"Сергій Бубка", s:"Встановив 35 світових рекордів, щоразу піднімаючи планку на один сантиметр."},
+{t:"Ліна Костенко", s:"Шістнадцять років її не друкували, бо вона не пішла на компроміс. Усі ці роки писала в шухляду."},
+{t:"Леся Українка", s:"Хворіла з дванадцяти років і більшість творів писала лежачи. Володіла близько десятьма мовами."},
+{t:"Марія Приймаченко", s:"Не мала жодної художньої освіти й прожила все життя в селі Болотня. Її виставки об'їхали Європу."},
+{t:"Іван Пулюй", s:"Досліджував катодні промені й робив знімки ще до того, як про них оголосив Рентген."},
+{t:"Барбара Мак-Клінток", s:"Її відкриття 1940-х наукова спільнота проігнорувала. Нобелівську премію вона отримала у 81, коли інші дійшли до тих самих висновків."},
+{t:"66 днів, не 21", s:"«21 день на звичку» — міф із книжки пластичного хірурга 1960-х. Дослідження Лондонського університету 2009 року дало середню цифру 66 днів, з розкидом від 18 до 254."},
+{t:"Один пропуск нічого не ламає", s:"У тому ж дослідженні пропущений день практично не впливав на кінцевий результат. Значення має повернення, а не бездоганність."},
+{t:"Мозок не застигає", s:"Нові нейронні зв'язки утворюються все життя. Нейропластичність не вимикається після двадцяти п'яти."},
+{t:"Ефект маленьких перемог", s:"Тереза Амабіле з Гарварду проаналізувала тисячі щоденників і виявила: найсильніше на щоденну мотивацію впливає відчуття просування, навіть крихітного."},
+{t:"Ефект Зейгарнік", s:"Незавершена справа тримається в пам'яті чіпкіше за завершену. Тому почати часто важче, ніж закінчити."},
+{t:"Правило двох хвилин", s:"Якщо справа займає менше двох хвилин, роби її одразу. Черга дрібниць не встигає накопичитися й забрати увагу."},
+{t:"Прокрастинація — не лінь", s:"Дослідники описують її як спробу уникнути неприємної емоції, а не як дефект характеру. Тому мотивація не працює, а зменшення опору працює."},
+{t:"Телефон на столі", s:"У дослідженнях люди гірше проходять тести на увагу, коли смартфон просто лежить поруч. Навіть вимкнений і навіть якщо до нього не торкаються."},
+{t:"Ціна перемикання", s:"Повернення в глибоку концентрацію після відволікання коштує в рази більше часу, ніж саме відволікання."},
+{t:"Прогулянка й ідеї", s:"Стенфордське дослідження показало: під час ходьби люди генерують помітно більше ідей, ніж сидячи, і ефект тримається ще якийсь час після."},
+{t:"Читання й емпатія", s:"Регулярне читання художньої літератури пов'язане з кращим розпізнаванням чужих емоцій і намірів."},
+{t:"Сон закріплює", s:"Уночі мозок переносить вивчене за день у довготривалу пам'ять. Недоспана ніч б'є по запам'ятовуванні сильніше, ніж пропущене повторення."},
+{t:"Чарльз Дарвін", s:"Збирав докази двадцять років і надрукував «Походження видів», лише коли зрозумів, що його ось-ось випередять."},
+{t:"Ґреґор Мендель", s:"Вісім років вирощував горох у монастирському саду. Його роботу проігнорували й перевідкрили через тридцять п'ять років."},
+{t:"Альфред Нобель", s:"Прочитав власний помилковий некролог, де його назвали торговцем смертю. Переписав заповіт і заснував премію."},
+{t:"Дмитро Менделєєв", s:"Місяцями розкладав картки з елементами, як пасьянс, перебираючи порядок, поки система не склалася."},
+{t:"Френк Ллойд Райт", s:"Спроєктував Музей Ґуґґенгайма у 76 і працював над ним до останнього року життя."},
+{t:"Анна Мері Робертсон", s:"Почала малювати у 78, бо пальці вже не тримали голку для вишивки. Написала близько 1500 картин і дожила до 101."},
+{t:"Фауджа Сінгх", s:"Уперше вийшов на марафонську дистанцію у 89. Останній марафон пробіг у 100."},
+{t:"Юїчіро Міура", s:"Зійшов на Еверест у 80 років, після кількох операцій на серці."},
+{t:"Дайана Наяд", s:"Перепливла від Куби до Флориди з п'ятої спроби, у 64. Між першою і останньою спробою минуло 35 років."},
+{t:"Джон Гудінаф", s:"Розробив літій-іонний акумулятор у 57. Нобелівську премію отримав у 97, ставши найстаршим лауреатом в історії."},
+{t:"Кацусіка Хокусай", s:"Створив «Велику хвилю» у сімдесят і писав, що все зроблене ним до сімдесяти не варте уваги."},
+{t:"Генрі Форд", s:"Двічі збанкрутував із автомобільними компаніями, перш ніж третя запрацювала."},
+{t:"Соічіро Хонда", s:"Його завод зруйнувало землетрусом і бомбардуванням. Він продав залишки Toyota і у 41 почав спочатку з мотоциклів."},
+{t:"Сара Блейклі", s:"Два роки сама обходила фабрики й патентних юристів з ідеєю, за яку ніхто не брався. Патент писала власноруч за книжкою."},
+{t:"Ада Лавлейс", s:"Написала перший алгоритм для машини, якої на той момент фізично не існувало."},
+{t:"Кетрін Джонсон", s:"Рахувала траєкторії для NASA вручну. Джон Гленн відмовлявся летіти, поки вона особисто не перевірить розрахунки комп'ютера."},
+{t:"Ґрейс Гоппер", s:"Довела, що програми можна писати словами, а не числами, і зробила перший компілятор. Їй було за сорок."},
+{t:"Пітер Хіґґс", s:"Опублікував статтю у 1964. Нобелівську премію за неї отримав у 2013 — через сорок дев'ять років."},
+{t:"Джоселін Белл Бернелл", s:"Відкрила пульсари аспіранткою, вручну переглядаючи кілометри самописного паперу."},
+{t:"Розалінд Франклін", s:"Її знімок 51 став ключем до структури ДНК. Визнання прийшло десятиліттями пізніше."},
+{t:"Стівен Спілберг", s:"Тричі отримав відмову від кіношколи USC. Диплом там він отримав у 55, доздавши всі роботи."},
+{t:"Квентін Тарантіно", s:"Працював у відеопрокаті й писав сценарії між змінами, переказуючи клієнтам сюжети сотень фільмів."},
+{t:"Джеймс Кемерон", s:"Водив вантажівку й малював розкадровки на серветках, поки не потрапив на майданчик."},
+{t:"Гаррісон Форд", s:"До 35 заробляв теслярством, збиваючи двері й меблі акторам, які вже знімалися."},
+{t:"Андреа Бочеллі", s:"Працював адвокатом і співав у барах за гроші. Професійно почав співати після тридцяти."},
+{t:"Леонард Коен", s:"Писав «Hallelujah» роками й склав понад вісімдесят куплетів. Пісню помітили лише через десятиліття, у чужих виконаннях."},
+{t:"Йоганн Себастьян Бах", s:"За життя був відомий передусім як органіст. Його музику масово перевідкрили майже через вісімдесят років після смерті."},
+{t:"Антоніо Вівальді", s:"Помер у бідності й забутим. Основну частину його рукописів знайшли аж у XX столітті."},
+{t:"Емілі Дікінсон", s:"За життя надрукувала близько десятка віршів. У її столі знайшли майже тисячу вісімсот."},
+{t:"Франц Кафка", s:"Просив друга спалити всі рукописи. Друг не послухав."},
+{t:"Герман Мелвілл", s:"«Мобі Дік» провалився в продажах, і автор до кінця життя працював митним інспектором. Роман визнали через сімдесят років."},
+{t:"Джон Кеннеді Тул", s:"Його роман вийшов через одинадцять років після смерті автора — мати роками носила рукопис по видавництвах. Пулітцерівська премія."},
+{t:"Марк Твен", s:"Збанкрутував на невдалій інвестиції у шістдесят і виплатив усі борги, об'їхавши світ з лекціями."},
+{t:"Вінстон Черчилль", s:"Тричі складав вступний іспит до військового училища, перш ніж пройшов."},
+{t:"Ернест Шеклтон", s:"Не дійшов до полюса, судно розчавила крига. Два роки він виводив команду й вивів усіх до одного живими."},
+{t:"Роальд Даль", s:"Почав писати у двадцять шість, після того як його літак розбився і він довго відновлювався."},
+{t:"Бенджамін Франклін", s:"Вів таблицю з тринадцятьма чеснотами і щовечора ставив позначки навпроти тих, які порушив. Прототип трекера звичок, якому двісті п'ятдесят років."},
+{t:"Фредерік Дуглас", s:"Навчився читати таємно, по шматках, обмінюючи хліб на уроки в сусідських хлопців. Став одним із найвпливовіших ораторів свого часу."},
+{t:"Джек Лондон", s:"Не мав освіти й вичитував себе сам у публічній бібліотеці, ставлячи норму тисяча слів на день."},
+{t:"Ярослава Магучіх", s:"Виграла олімпійське золото у стрибках у висоту, тренуючись під час війни, часто з виїздами й без свого залу."},
+{t:"Оксана Баюл", s:"Виграла Олімпіаду у шістнадцять, залишившись без обох батьків і без свого тренера за рік до старту."},
+{t:"Олександр Усик", s:"Піднявся у важку вагу, де кожен суперник був більший за нього, і став абсолютним чемпіоном у другій категорії."},
+{t:"Яна Клочкова", s:"Чотири олімпійські золоті медалі — більше, ніж у будь-якої іншої української спортсменки."},
+{t:"Юсейн Болт", s:"Має сколіоз, через який одна нога коротша. Замість боротися з асиметрією, він побудував техніку бігу навколо неї."},
+{t:"Бетані Гамільтон", s:"Повернулася на дошку через місяць після того, як втратила руку, і за рік виграла змагання."},
+{t:"Людвіг Гуттман", s:"Організував змагання для ветеранів з травмами хребта в день відкриття Олімпіади 1948. З цієї ідеї виросла Паралімпіада."},
+{t:"Кобі Браянт", s:"Приходив у зал о четвертій ранку й закінчував основне тренування до того, як інші прокидалися."},
+{t:"Микола Амосов", s:"Кардіохірург, який у сімдесят дев'ять розробив собі систему навантажень і роками вів щоденник спостережень за власним організмом."},
+{t:"Сенека", s:"«Ми не наважуємось не тому, що важко. Важко тому, що ми не наважуємось.»"}
+];
+
+/* ═══ FIREBASE — встав конфіг, і вмикається синк ═══ */
+const FB = { apiKey:"AIzaSyBr5_xceU_RIz0INKidzbp0JMLhJ89ojsU", authDomain:"challenges-bac30.firebaseapp.com", projectId:"challenges-bac30", appId:"1:125488112597:web:fa2b777e00d839a6c4935c" };
+const SDK = "https://www.gstatic.com/firebasejs/11.6.0/";
+
+const DEFAULT_MODES = [{id:"m1",name:"Кежуал"},{id:"m2",name:"Робота"}];
+const DEFAULT_HABITS = [
+  {id:"read",name:"Читати",emoji:"📖",mode:"m1"},{id:"walk",name:"10 000 кроків",emoji:"👟",mode:"m1"},
+  {id:"phone",name:"Менше соцмереж",emoji:"📵",mode:"m1"},
+  {id:"work",name:"Робота без залипання",emoji:"🎯",mode:"m2"},{id:"plan",name:"План на завтра",emoji:"🗒",mode:"m2"}
+];
+const SUGGEST = [["📖","Читати 20 хв"],["👟","10 000 кроків"],["🏋️","Тренування"],["📵","Без соцмереж"],["🎯","Глибока робота 2 год"],
+  ["🗒","План на завтра"],["📥","Інбокс до нуля"],["🌅","Без телефону першу годину"],["💧","2 л води"],["😴","Сон до 00:00"]];
+const ACH = [
+  {id:"first",  e:"🌱", t:"Перший крок",     d:"Перший повний день",                     p:c=>Math.min(c.full,1)},
+  {id:"s3",     e:"🔥", t:"Розігрів",        d:"3 повні дні поспіль",                    p:c=>c.best/3},
+  {id:"s7",     e:"⚡", t:"Тиждень",         d:"7 днів без пропусків",                   p:c=>c.best/7},
+  {id:"s10",    e:"💎", t:"Десятка",         d:"10 днів поспіль",                        p:c=>c.best/10},
+  {id:"s21",    e:"🧩", t:"21 день",         d:"Той самий міф, але ти його пройшов",     p:c=>c.best/21},
+  {id:"s30",    e:"🏔", t:"Місяць",          d:"30 днів поспіль",                        p:c=>c.best/30},
+  {id:"s50",    e:"🚀", t:"Півсотні",        d:"50 днів поспіль",                        p:c=>c.best/50},
+  {id:"s66",    e:"🧬", t:"Звичка",          d:"66 днів поспіль, середній строк за наукою",p:c=>c.best/66},
+  {id:"s100",   e:"👑", t:"Бездоганно",      d:"100 днів поспіль",                       p:c=>c.best/100},
+  {id:"fin",    e:"🏁", t:"Фініш",           d:"Дійти до 100-го дня",                    p:c=>c.day/100},
+  {id:"f25",    e:"🧱", t:"Фундамент",       d:"25 повних днів загалом",                 p:c=>c.full/25},
+  {id:"back",   e:"🔁", t:"Повернення",      d:"Повний день одразу після нульового",     p:c=>+c.back},
+  {id:"early",  e:"🌅", t:"Рання пташка",    d:"Закрити все до полудня",                 p:c=>+c.early},
+  {id:"balance",e:"⚖️", t:"Баланс",          d:"Закрити всі режими за один день",        p:c=>+c.balance},
+  {id:"mood7",  e:"🎭", t:"Самоспостерігач", d:"Оцінити 7 днів",                         p:c=>c.moods/7},
+  {id:"notes10",e:"✍️", t:"Літописець",      d:"10 нотаток",                             p:c=>c.notes/10},
+  {id:"steps",  e:"👟", t:"10 000",          d:"10 тисяч кроків з iPhone за день",       p:c=>c.steps/10000},
+  {id:"detox",  e:"🧘", t:"Детокс",          d:"День, коли соцмережі відкрито ≤ 3 разів",p:c=>+c.detox},
+  {id:"perfect",e:"☀️", t:"Ідеальний день",  d:"Все закрито і настрій 10",               p:c=>+c.perfect},
+  {id:"again",  e:"🔄", t:"Друга спроба",    d:"Почати челендж заново",                  p:c=>+c.again}
+];
+const DEFAULT_TAGS = ["продуктивно","спокійно","метушня","втома","спорт","люди","залипав","натхнення"];
+const MILESTONES = [7,14,30,50,75,100];
+
+let nick="", cloud=null, editH=false, editT=false, S={};
+let cur={n:0,key:""}, curDate="", firstGrid=true, lastStreak=-1, openStat=null, profFrom=0;
+
+const $ = s => document.querySelector(s);
+const iso = d => d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const today = () => iso(new Date());
+const esc = s => String(s).replace(/[<>&]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;"}[c]));
+const buzz = (ms=9) => { if(S?.set?.vibe===false) return; try{ navigator.vibrate?.(ms); }catch(e){} };
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const hue = r => 4 + r*138;
+const col = r => `hsl(${hue(r)} ${72 - r*10}% ${47 + r*2}%)`;
+const grad = c0 => `linear-gradient(180deg,color-mix(in srgb,${c0} 72%,white),${c0})`;
+const colC = (r,a=1) => `hsla(${hue(r)}, ${72 - r*10}%, ${47 + r*2}%, ${a})`;
+
+/* тема */
+const SUN='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+const MOON='<svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+function setTheme(t){
+  document.documentElement.dataset.theme=t;
+  const tb=$("#theme"); if(tb) tb.innerHTML = t==="light" ? MOON : SUN;
+  document.querySelector('meta[name="theme-color"]').content = t==="light" ? "#F2F2F7" : "#000000";
+  try{ localStorage.setItem("h100:theme",t); }catch(e){}
+}
+(function(){ let t="dark"; try{ t=localStorage.getItem("h100:theme")||"dark"; }catch(e){} setTheme(t); })();
+
+$("#theme").onclick=()=>{ buzz(); setTheme(document.documentElement.dataset.theme==="light"?"dark":"light"); if(cur.n===5) drawProfile(); };
+$("#mring").onclick=()=>{ buzz(); if(cur.n!==0) tab(0); setTimeout(()=>$("#grid").scrollIntoView({behavior:"smooth",block:"center"}),80); };
+
+/* ═══ зберігання ═══ */
+function local(op,val){
+  try{
+    if(op==="get") return JSON.parse(localStorage.getItem("h100:"+nick)||"null");
+    localStorage.setItem("h100:"+nick, JSON.stringify(val));
+  }catch(e){ return null; }
+}
+async function connect(){
+  if(!FB.apiKey) return null;
+  try{
+    const [app,fs] = await Promise.all([import(SDK+"firebase-app.js"), import(SDK+"firebase-firestore.js")]);
+    const a = app.initializeApp(FB);
+    const db = fs.initializeFirestore(a,{ localCache: fs.persistentLocalCache({tabManager: fs.persistentMultipleTabManager()}) });
+    return { db, doc:fs.doc, getDoc:fs.getDoc, setDoc:fs.setDoc };
+  }catch(e){ console.warn("cloud off:",e); return null; }
+}
+function normalize(data){
+  S = data || {};
+  S.start  ||= today();
+  S.modes  ||= DEFAULT_MODES.map(m=>({...m}));
+  S.habits ||= DEFAULT_HABITS.map(h=>({...h}));
+  S.habits.forEach(h=>{ if(!S.modes.some(m=>m.id===h.mode)) h.mode=S.modes[0].id; });
+  if(!S.modes.some(m=>m.id===S.mode)) S.mode=S.modes[0].id;
+  const guess=re=>S.habits.find(h=>re.test(h.name)||re.test(h.id))?.id||null;
+  S.int ||= { steps:{habit:guess(/крок|ход|walk|step/i),goal:10000}, social:{habit:guess(/соц|телефон|phone|інст|tiktok/i),limit:10,on:false,since:""} };
+  S.set ||= { facts:true, vibe:true };
+  S.ach ||= {}; S.history ||= []; S.round ||= 1;
+  S.tags   ||= DEFAULT_TAGS.slice();
+  S.goals  ||= { short:[], mid:[], long:[] };
+  S.days   ||= {};
+  S.ms     ||= {};
+  S.lastFact ||= "";
+}
+async function load(){
+  cloud = await connect();
+  let data = null;
+  if(cloud){ try{ const s = await cloud.getDoc(cloud.doc(cloud.db,"users",nick)); if(s.exists()) data = s.data(); }catch(e){ console.warn(e); } }
+  const loc = data ? null : local("get");
+  normalize(data || loc);
+  if(cloud && !data && loc) save();
+}
+let timer;
+function save(){
+  S.upd=Date.now();
+  local("set",S);
+  clearTimeout(timer);
+  timer = setTimeout(async ()=>{
+    if(!cloud) return;
+    try{ await cloud.setDoc(cloud.doc(cloud.db,"users",nick), S); flash("збережено"); }
+    catch(e){ flash("офлайн, синхронізую пізніше"); }
+  },900);
+}
+async function pullCloud(){
+  if(!cloud) return;
+  try{ const s=await cloud.getDoc(cloud.doc(cloud.db,"users",nick));
+    if(s.exists()){ const d=s.data(); if((d.upd||0)>(S.upd||0)){ normalize(d); local("set",S); refresh(); } } }catch(e){}
+  await pullExt();
+}
+function parseSteps(v){
+  if(typeof v==="number") return Math.round(v);
+  const s=String(v).replace(/[\s\u00a0\u202f]/g,""), m=s.match(/^(\d+)(?:[.,]\d+)?$/);
+  return m ? parseInt(m[1]) : (parseInt(s.replace(/\D/g,""))||0);
+}
+async function pullExt(){
+  if(!cloud || dayIndex()<0) return;
+  const idx=dayIndex(), keys=[]; for(let i=Math.max(0,idx-6);i<=idx;i++) keys.push(dateKey(i));
+  let changed=false;
+  await Promise.all(keys.map(async k=>{
+    try{ const s=await cloud.getDoc(cloud.doc(cloud.db,"ext",nick+"_"+k)); if(!s.exists()) return;
+      const x=s.data(), d=dayOf(k);
+      if(x.n!=null && d.opens!==x.n){ d.opens=x.n; changed=true; }
+      if(x.steps!=null){ const st=parseSteps(x.steps); if(d.steps!==st){ d.steps=st; changed=true; } }
+    }catch(e){}
+  }));
+  if(changed){ save(); refresh(); }
+}
+function flash(t){ const el=$("#sync"); el.textContent=t; el.classList.add("show"); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove("show"),1600); }
+
+/* ═══ sheet ═══ */
+function ask({title,value="",del=false,ok="Зберегти",placeholder="",extra=null,desc="",confirm=false,danger=false,delLabel="Видалити"}){
+  return new Promise(res=>{
+    const w=$("#sheet"), inp=$("#sheetIn"), ex=$("#sheetEx"), bOk=$("#sheetOk"), bDel=$("#sheetDel");
+    $("#sheetT").textContent=title; inp.value=value; inp.placeholder=placeholder;
+    $("#sheetD").textContent=desc; $("#sheetD").hidden=!desc; $("#sheetF").hidden=confirm;
+    ex.hidden=extra===null; if(extra!==null) ex.value=extra;
+    bDel.hidden=!del; bDel.textContent=delLabel; bOk.textContent=ok; bOk.classList.toggle("red",danger);
+    w.hidden=false;
+    requestAnimationFrame(()=>{ w.classList.add("open"); if(!confirm) setTimeout(()=>{ inp.focus(); inp.select(); },120); });
+    const close=r=>{ w.classList.remove("open"); setTimeout(()=>w.hidden=true,380);
+      bOk.onclick=bDel.onclick=inp.onkeydown=ex.onkeydown=w.querySelector(".sheet-bg").onclick=null; res(r); };
+    bOk.onclick=()=>{ if(confirm) return close({value:true}); const v=inp.value.trim(); close(v?{value:v,extra:[...ex.value.trim()].slice(0,2).join("")}:null); };
+    bDel.onclick=()=>close({del:true});
+    w.querySelector(".sheet-bg").onclick=()=>close(null);
+    inp.onkeydown=ex.onkeydown=e=>{ if(e.key==="Enter") bOk.onclick(); if(e.key==="Escape") close(null); };
+  });
+}
+
+/* ═══ дати й рахунок ═══ */
+const dayOf = d => (S.days[d] ||= {done:{},mood:0,tags:[],note:""});
+function dateKey(i){ const d=new Date(S.start+"T00:00:00"); d.setDate(d.getDate()+i); return iso(d); }
+function dayIndex(k){ const a=new Date(S.start+"T00:00:00"), b=new Date((k||today())+"T00:00:00"); return Math.round((b-a)/864e5); }
+const isRest = k => !!S.days[k]?.rest;
+const habitsOf = m => S.habits.filter(h=>h.mode===m);
+const H = () => habitsOf(S.mode);
+const modeName = (m=S.mode) => S.modes.find(x=>x.id===m)?.name||"";
+function autoOf(h,key){
+  const d=S.days[key], I=S.int;
+  if(I.steps.habit===h.id && d?.steps!=null) return {kind:"steps", done:d.steps>=I.steps.goal, v:d.steps, max:I.steps.goal};
+  if(I.social.habit===h.id && I.social.on && I.social.since && key>=I.social.since){ const o=d?.opens||0; return {kind:"social", done:o<=I.social.limit, v:o, max:I.social.limit}; }
+  return null;
+}
+function isDone(h,key){ const a=autoOf(h,key); return a ? a.done : !!S.days[key]?.done?.[h.id]; }
+function doneCount(key,m=S.mode){ return habitsOf(m).filter(h=>isDone(h,key)).length; }
+function ratio(key,m=S.mode){ const n=habitsOf(m).length; return n ? doneCount(key,m)/n : 0; }
+function headDate(){ const d=new Date(), w=d.toLocaleDateString("uk-UA",{weekday:"long"});
+  return w[0].toUpperCase()+w.slice(1)+", "+d.toLocaleDateString("uk-UA",{day:"numeric",month:"long"}); }
+const human = k => new Date(k+"T00:00:00").toLocaleDateString("uk-UA",{day:"numeric",month:"short"});
+function streak(m=S.mode){
+  let n=0, idx=dayIndex();
+  for(let i=idx;i>=0;i--){ const k=dateKey(i); if(isRest(k)) continue; if(ratio(k,m)===1) n++; else if(i!==idx) break; }
+  return n;
+}
+function bestStreak(m=S.mode){
+  let best=0,n=0, idx=dayIndex();
+  for(let i=0;i<=idx;i++){ const k=dateKey(i); if(isRest(k)) continue; if(ratio(k,m)===1){ n++; best=Math.max(best,n); } else if(i!==idx) n=0; }
+  return best;
+}
+function habitStreak(h){
+  let n=0, idx=dayIndex();
+  for(let i=idx;i>=0;i--){ const k=dateKey(i); if(isRest(k)) continue; if(isDone(h,k)) n++; else if(i!==idx) break; }
+  return n>1?n:0;
+}
+
+/* ═══ сітка ═══ */
+function drawModes(){
+  const box=$("#modes"); box.innerHTML="";
+  S.modes.forEach(m=>{
+    const b=document.createElement("button"); b.className="mode"+(m.id===S.mode?" on":""); b.textContent=m.name;
+    b.onclick=()=>{ if(m.id===S.mode){ editMode(m); return; } buzz(); S.mode=m.id; editH=false; firstGrid=true; lastStreak=-1; save(); refresh(); };
+    box.appendChild(b);
+  });
+  if(S.modes.length<4){ const a=document.createElement("button"); a.className="mode add"; a.textContent="+"; a.onclick=addMode; box.appendChild(a); }
+}
+async function addMode(){
+  const r=await ask({title:"Новий режим",ok:"Додати",placeholder:"Наприклад, Спорт"}); if(!r) return;
+  const id="m"+Date.now(); S.modes.push({id,name:r.value.slice(0,18)}); S.mode=id; firstGrid=true; lastStreak=-1; save(); refresh();
+}
+async function editMode(m){
+  const r=await ask({title:"Режим",value:m.name,del:S.modes.length>1,desc:S.modes.length>1?"Видалення прибере і звички цього режиму.":""}); if(!r) return;
+  if(r.del){ S.habits=S.habits.filter(h=>h.mode!==m.id); S.modes=S.modes.filter(x=>x.id!==m.id); S.mode=S.modes[0].id; firstGrid=true; lastStreak=-1; }
+  else m.name=r.value.slice(0,18);
+  save(); refresh();
+}
+function drawGrid(wave){
+  drawModes();
+  const g=$("#grid"), idx=dayIndex(), t=today(), has=H().length>0;
+  g.innerHTML="";
+  for(let i=0;i<100;i++){
+    const key=dateKey(i), r=ratio(key), past=i<=idx, rest=isRest(key);
+    const c=document.createElement("button");
+    c.className="cell"+(key===t?" today":"")+(has&&past&&r===0&&!rest?" zero":"")+(i>idx?" future":"")+(rest?" rest":"");
+    const f=document.createElement("div"); f.className="fill";
+    const c0=col(r);
+    f.style.background=grad(c0);
+    f.style.height=(firstGrid && !reduced ? 0 : r*100)+"%";
+    if(r===1) c.style.boxShadow=`0 0 14px color-mix(in srgb,${c0} 55%,transparent)`;
+    c.appendChild(f);
+    c.onclick=()=>openDay(key);
+    c.onmouseenter=e=>tip(e.currentTarget,key,i);
+    c.onmouseleave=hideTip;
+    if(firstGrid){ c.classList.add("enter"); c.style.animationDelay=(i*6)+"ms"; }
+    if(wave){ c.classList.add("wave"); c.style.animationDelay=Math.min(Math.abs(i-idx)*14,420)+"ms"; }
+    g.appendChild(c);
+  }
+  if(firstGrid){
+    firstGrid=false;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      [...g.children].forEach((c,i)=>{ c.firstChild.style.transitionDelay=(i*6+200)+"ms"; c.firstChild.style.height=(ratio(dateKey(i))*100)+"%"; });
+      setTimeout(()=>[...g.children].forEach(c=>c.firstChild.style.transitionDelay=""),1500);
+    }));
+  }
+  $("#dayNum").textContent=Math.min(idx+1,100);
+  const rt=ratio(t);
+  document.documentElement.style.setProperty("--glow", rt===0 ? "#6E6E80" : col(rt));
+  const mf=$("#mringFg"); mf.style.strokeDashoffset=59.7*(1-rt); mf.style.stroke=rt===0?"var(--faint)":col(rt);
+  const ml=$("#mringLbl"); ml.textContent = rt===1 ? "✓" : String(doneCount(t)); ml.style.fill = rt===1 ? col(1) : "var(--dim)";
+  const s=streak(), sn=$("#streakNum");
+  sn.textContent=s;
+  if(s>lastStreak && lastStreak>=0){ sn.classList.remove("pop"); void sn.offsetWidth; sn.classList.add("pop"); }
+  lastStreak=s;
+}
+function tip(el,key,i){
+  const t=$("#tip"), d=S.days[key];
+  const rows=H().map(h=>{ const ok=isDone(h,key); return `<div class="r${ok?" y":""}">${ok?"✓":"—"} ${esc(h.name)}</div>`; }).join("");
+  t.innerHTML=`<b>День ${i+1} · ${human(key)} · ${isRest(key)?"вихідний":doneCount(key)+" з "+H().length}</b>${rows||'<div class="r">немає звичок</div>'}`;
+  const r=el.getBoundingClientRect(); t.classList.add("show");
+  const w=t.offsetWidth, h=t.offsetHeight;
+  t.style.left=Math.max(8,Math.min(window.innerWidth-w-8, r.left+r.width/2-w/2))+"px";
+  t.style.top=(r.top-h-10 < 8 ? r.bottom+10 : r.top-h-10)+"px";
+}
+const hideTip = () => $("#tip").classList.remove("show");
+
+/* ═══ конфеті ═══ */
+function confetti(from,n=42){
+  if(reduced) return;
+  const box=$("#confetti"), r=from?.getBoundingClientRect();
+  const cx=r?r.left+r.width/2:innerWidth/2, cy=r?r.top+r.height/2:innerHeight/3;
+  const colors=["#FFB340","#34C759","#5AC8FA","#FF6B6B","#FFFFFF","#FFD60A"];
+  for(let i=0;i<n;i++){
+    const p=document.createElement("i");
+    p.style.left=cx+"px"; p.style.top=cy+"px"; p.style.background=colors[i%colors.length];
+    box.appendChild(p);
+    const a=Math.random()*Math.PI*2, v=140+Math.random()*260, dx=Math.cos(a)*v, dy=Math.sin(a)*v-160;
+    p.animate([
+      {transform:"translate(-50%,-50%) rotate(0deg) scale(1)",opacity:1},
+      {transform:`translate(calc(-50% + ${dx}px),calc(-50% + ${dy+220}px)) rotate(${(Math.random()*720-360)}deg) scale(.6)`,opacity:0}
+    ],{duration:900+Math.random()*600,easing:"cubic-bezier(.2,.7,.3,1)"}).onfinish=()=>p.remove();
+  }
+}
+
+/* ═══ блоки ═══ */
+function head(text, action, fn){
+  const p=document.createElement("p"); p.className="h";
+  const s=document.createElement("span"); s.textContent=text; p.appendChild(s);
+  if(action){ const b=document.createElement("button"); b.textContent=action; b.onclick=fn; p.appendChild(b); }
+  return p;
+}
+const fmt = n => Number(n).toLocaleString("uk-UA");
+function habitRow(h,key,idx,box){
+  const d=dayOf(key), auto=autoOf(h,key), done=isDone(h,key);
+  const meta = auto ? `<span style="color:${auto.done?"var(--green)":"var(--red)"}">${fmt(auto.v)}</span> / ${fmt(auto.max)}${auto.kind==="social"?" відкр.":""}` : (habitStreak(h)||"");
+  const el=document.createElement("div");
+  el.className="task"+(done?" done":"");
+  el.innerHTML=`
+    <div class="box"><svg viewBox="0 0 24 24"><path d="M5 13l4.5 4.5L19 7"/></svg></div>
+    ${h.emoji?`<span class="emo">${esc(h.emoji)}</span>`:""}
+    <div class="task-name">${esc(h.name)}</div>
+    <div class="task-streak">${meta}</div>
+    <div class="tools"><button data-a="up">↑</button><button data-a="down">↓</button><button data-a="edit">✎</button></div>`;
+  el.querySelectorAll(".tools button").forEach(b=>{
+    b.onclick=async e=>{
+      e.stopPropagation();
+      const a=b.dataset.a;
+      const list=H(), j = a==="up" ? idx-1 : idx+1;
+      if((a==="up"||a==="down") && list[j]){ const ia=S.habits.indexOf(list[idx]), ib=S.habits.indexOf(list[j]); [S.habits[ia],S.habits[ib]]=[S.habits[ib],S.habits[ia]]; }
+      if(a==="edit"){
+        const r=await ask({title:"Звичка",value:h.name,del:true,extra:h.emoji||""});
+        if(!r) return;
+        if(r.del) S.habits=S.habits.filter(x=>x.id!==h.id); else { h.name=r.value.slice(0,40); h.emoji=r.extra; }
+      }
+      save(); refresh();
+    };
+  });
+  el.onclick=()=>{
+    if(editH) return;
+    if(auto){ flash(auto.kind==="steps"?"кроки рахуються з iPhone":"соцмережі рахуються з iPhone"); return; }
+    const was=ratio(key);
+    if(d.done[h.id]) delete d.done[h.id]; else d.done[h.id]=true;
+    const full = ratio(key)===1 && was<1;
+    if(full && key===today()){ const n=new Date(); d.fullAt=n.getHours()+n.getMinutes()/60; }
+    buzz(full?[12,40,18]:9); save();
+    refresh(full && key===today());
+    if(full && key===today()) celebrate();
+  };
+  box.appendChild(el);
+}
+function habitsBlock(box,key){
+  box.innerHTML="";
+  const n=doneCount(key), total=H().length;
+  const label=(key===today()?"Сьогодні":"Звички цього дня")+(total?` · ${n} з ${total}`:"");
+  box.appendChild(head(label, editH?"Готово":"Змінити", ()=>{ editH=!editH; refresh(); }));
+  const list=document.createElement("div"); list.className=editH?"editing":"";
+  if(!total && !editH){
+    const s=document.createElement("div"); s.className="suggest";
+    s.innerHTML=`<p>У режимі «${esc(modeName())}» ще порожньо. Тапни, щоб додати, або натисни «Змінити» і впиши своє.</p><div class="chips"></div>`;
+    SUGGEST.forEach(([e,t])=>{ const c=document.createElement("button"); c.className="chip"; c.textContent=e+" "+t;
+      c.onclick=()=>{ buzz(); S.habits.push({id:"h"+Date.now(),name:t,emoji:e,mode:S.mode}); save(); refresh(); }; s.lastChild.appendChild(c); });
+    list.appendChild(s);
+  }
+  H().forEach((h,i)=>habitRow(h,key,i,list));
+  if(editH){
+    const b=document.createElement("button"); b.className="rowbtn"; b.textContent="+ Додати звичку";
+    b.onclick=async()=>{ const r=await ask({title:"Нова звичка",ok:"Додати",placeholder:"Назва",extra:""}); if(!r) return;
+      S.habits.push({id:"h"+Date.now(),name:r.value.slice(0,40),emoji:r.extra,mode:S.mode}); save(); refresh(); };
+    list.appendChild(b);
+  }
+  box.appendChild(list);
+}
+function paintMood(m,val){
+  [...m.children].forEach((b,i)=>{ const lit=i<val; b.style.transitionDelay=lit?(i*22)+"ms":((9-i)*12)+"ms"; b.style.background=lit?col((i+1)/10):"var(--soft)"; });
+}
+function ratingBlock(box,key){
+  box.innerHTML="";
+  const d=dayOf(key);
+  box.appendChild(head(key===today()?"Як пройшов сьогодні":"Як пройшов день"));
+  const m=document.createElement("div"); m.className="mood";
+  const v=document.createElement("div"); v.className="mood-val";
+  const setVal=()=>v.innerHTML=`<span>кепсько</span><b>${d.mood?d.mood+" / 10":"—"}</b><span>чудово</span>`;
+  for(let i=1;i<=10;i++){ const b=document.createElement("button"); b.style.height=(28+i*8.5)+"%";
+    b.onclick=()=>{ d.mood=(d.mood===i?0:i); buzz(); save(); paintMood(m,d.mood); setVal(); drawDays(); }; m.appendChild(b); }
+  paintMood(m,d.mood); setVal(); box.appendChild(m); box.appendChild(v);
+
+  box.appendChild(head("Що було", editT?"Готово":"Змінити", ()=>{ editT=!editT; refresh(); }));
+  const t=document.createElement("div"); t.className="tags"+(editT?" editing":"");
+  S.tags.forEach((name,i)=>{
+    const b=document.createElement("button"); b.className="tag"+(d.tags.includes(name)?" on":"");
+    b.innerHTML=`<span>${esc(name)}</span>`+(editT?'<span class="x">×</span>':"");
+    b.onclick=async()=>{
+      if(editT){
+        const r=await ask({title:"Тег",value:name,del:true}); if(!r) return;
+        if(r.del){ S.tags.splice(i,1); Object.values(S.days).forEach(dd=>{ dd.tags=(dd.tags||[]).filter(x=>x!==name); }); }
+        else { const nn=r.value.slice(0,24); S.tags[i]=nn; Object.values(S.days).forEach(dd=>{ dd.tags=(dd.tags||[]).map(x=>x===name?nn:x); }); }
+        save(); refresh(); return;
+      }
+      const on=d.tags.includes(name); d.tags = on ? d.tags.filter(x=>x!==name) : [...d.tags,name];
+      b.classList.toggle("on",!on); buzz(); save();
+    };
+    t.appendChild(b);
+  });
+  if(editT){ const b=document.createElement("button"); b.className="tag"; b.textContent="+ додати";
+    b.onclick=async()=>{ const r=await ask({title:"Новий тег",ok:"Додати"}); if(!r) return; S.tags.push(r.value.slice(0,24)); save(); refresh(); }; t.appendChild(b); }
+  box.appendChild(t);
+
+  box.appendChild(head("Нотатка"));
+  const ta=document.createElement("textarea"); ta.className="note"; ta.placeholder="Пару рядків про день"; ta.value=d.note||"";
+  ta.oninput=e=>{ d.note=e.target.value; save(); }; box.appendChild(ta);
+
+  const sw=document.createElement("div"); sw.className="switch";
+  sw.innerHTML=`<div>Вихідний<small>серія не рветься, день не рахується</small></div><button class="tog${d.rest?" on":""}" aria-label="Вихідний"></button>`;
+  sw.querySelector(".tog").onclick=e=>{ d.rest=!d.rest; e.currentTarget.classList.toggle("on",d.rest); buzz(); save(); drawGrid(); drawDays(); };
+  box.appendChild(sw);
+}
+function render(){
+  if(cur.n===0) habitsBlock($("#todayBlock"),today());
+  else if(cur.n===1){ drawWeek(); ratingBlock($("#todayRating"),today()); drawDays(); }
+  else if(cur.n===2) drawStats();
+  else if(cur.n===3) drawGoals();
+  else if(cur.n===4){ habitsBlock($("#detailHabits"),cur.key); ratingBlock($("#detailRating"),cur.key); }
+  else if(cur.n===5) drawProfile();
+}
+let achT;
+function refresh(wave){ render(); drawGrid(wave); clearTimeout(achT); achT=setTimeout(checkAch,700); }
+
+/* ═══ тиждень ═══ */
+function weekStats(w){
+  const idx=dayIndex(), from=w*7, to=Math.min(from+6,idx);
+  let full=0,sum=0,n=0,moods=[],tags={};
+  for(let i=from;i<=to;i++){
+    const k=dateKey(i), d=S.days[k];
+    if(d?.mood) moods.push(d.mood); (d?.tags||[]).forEach(x=>tags[x]=(tags[x]||0)+1);
+    if(isRest(k)) continue;
+    const r=ratio(k); n++; sum+=r; if(r===1) full++;
+  }
+  const top=Object.entries(tags).sort((a,b)=>b[1]-a[1])[0]?.[0];
+  return { w, from, to, n, full, avg:n?sum/n:0, mood:moods.length?moods.reduce((a,b)=>a+b,0)/moods.length:0, top };
+}
+function weekCells(w){
+  const idx=dayIndex(), from=w*7; let out="";
+  for(let i=from;i<from+7;i++){
+    if(i>idx||i>99){ out+='<i></i>'; continue; }
+    const k=dateKey(i);
+    if(isRest(k)){ out+='<i style="background:repeating-linear-gradient(135deg,var(--soft) 0 3px,transparent 3px 7px)"></i>'; continue; }
+    const r=ratio(k), c0=col(r);
+    out+=`<i style="background:${r===0?"rgba(255,69,58,.16)":grad(c0)};opacity:${r===0?1:(.35+.65*r)}"></i>`;
+  }
+  return out;
+}
+function drawWeek(){
+  const idx=dayIndex(), w=Math.floor(idx/7), st=weekStats(w);
+  $("#weekStrip").innerHTML=`<div class="week"><div class="week-top"><span>Тиждень <b>${w+1}</b></span>
+    <span>${st.full} з 7 повних${st.mood?` · настрій <b>${st.mood.toFixed(1)}</b>`:""}</span></div><div class="week-row">${weekCells(w)}</div></div>`;
+}
+
+/* ═══ дні ═══ */
+function drawDays(){
+  const box=$("#days"), idx=dayIndex(); box.innerHTML="";
+  if(idx<0){ box.innerHTML='<div class="empty">Історія почнеться завтра.</div>'; return; }
+  for(let i=idx;i>=0;i--){
+    const key=dateKey(i), r=ratio(key), d=S.days[key], rest=isRest(key);
+    const row=document.createElement("button"); row.className="dayrow";
+    row.innerHTML=`<span class="n">${i+1}</span><span class="d">${key===today()?"сьогодні":human(key)}</span>
+      <span class="track"><i style="width:${rest?100:Math.max(r*100,r===0?6:0)}%;background:${rest?"repeating-linear-gradient(135deg,var(--faint) 0 3px,transparent 3px 7px)":r===0?"var(--red)":col(r)}"></i></span>
+      <span class="m">${d?.mood?d.mood:"·"}</span>`;
+    row.onclick=()=>openDay(key); box.appendChild(row);
+  }
+}
+
+/* ═══ стата ═══ */
+function stats(){
+  const idx=dayIndex(); let days=0,sum=0,full=0;
+  for(let i=0;i<=idx;i++){ const k=dateKey(i); if(isRest(k)) continue; days++; const r=ratio(k); sum+=r; if(r===1) full++; }
+  return {days,avg:days?sum/days:0,full,best:Math.max(bestStreak(),streak())};
+}
+function habitPct(h){ let n=0,d=0; for(let i=0;i<=dayIndex();i++){ const k=dateKey(i); if(isRest(k)) continue; n++; if(isDone(h,k)) d++; } return n?d/n:0; }
+function corr(h){
+  let a=[],b=[];
+  for(let i=0;i<=dayIndex();i++){ const k=dateKey(i), d=S.days[k]; if(!d?.mood) continue; (isDone(h,k)?a:b).push(d.mood); }
+  if(a.length<2||b.length<2) return null;
+  const avg=x=>x.reduce((p,q)=>p+q,0)/x.length; return {with:avg(a),without:avg(b),diff:avg(a)-avg(b)};
+}
+function spark(){
+  const idx=dayIndex(), W=340, H=90, pts=[];
+  for(let i=0;i<=idx;i++){ const m=S.days[dateKey(i)]?.mood; if(m) pts.push([i,m]); }
+  if(pts.length<2) return `<div class="empty">Графік настрою з'явиться після двох оцінених днів</div>`;
+  const span=Math.max(idx,6), x=i=>8+(i/span)*(W-16), y=m=>H-8-((m-1)/9)*(H-16);
+  const path=pts.map((p,k)=>(k?"L":"M")+x(p[0]).toFixed(1)+" "+y(p[1]).toFixed(1)).join(" ");
+  const dots=pts.map(p=>`<circle cx="${x(p[0]).toFixed(1)}" cy="${y(p[1]).toFixed(1)}" r="3.5" fill="${col(p[1]/10)}"/>`).join("");
+  const avg=(pts.reduce((s,p)=>s+p[1],0)/pts.length).toFixed(1);
+  return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+    <defs><linearGradient id="sg" x1="0" x2="1"><stop offset="0" stop-color="${col(pts[0][1]/10)}"/><stop offset="1" stop-color="${col(pts[pts.length-1][1]/10)}"/></linearGradient></defs>
+    <path d="${path}" fill="none" stroke="url(#sg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>${dots}</svg>
+    <div class="spark-cap"><span>день 1</span><span>середній настрій <b style="color:var(--text)">${avg}</b></span><span>день ${idx+1}</span></div>`;
+}
+function miniGrid(h){
+  const idx=dayIndex(); let out="";
+  for(let i=0;i<100;i++){
+    const k=dateKey(i);
+    if(i>idx) out+='<i style="opacity:.4"></i>';
+    else if(isRest(k)) out+='<i style="background:repeating-linear-gradient(135deg,var(--soft) 0 3px,transparent 3px 7px)"></i>';
+    else if(isDone(h,k)) out+=`<i style="background:${grad("var(--green)")}"></i>`;
+    else out+='<i style="background:rgba(255,69,58,.18)"></i>';
+  }
+  return out;
+}
+function drawStats(){
+  const box=$("#stats"), st=stats();
+  let html=`<div class="kpis">
+    <div class="kpi"><b>${Math.round(st.avg*100)}%</b><span>виконання</span></div>
+    <div class="kpi"><b>${st.full}</b><span>повних днів</span></div>
+    <div class="kpi"><b>${st.best}</b><span>найкраща серія</span></div></div>
+    <p class="h">Настрій</p>${spark()}
+    <p class="h">Звички · ${esc(modeName())}</p>`;
+  if(!H().length) html+='<div class="empty">У цьому режимі ще немає звичок</div>';
+  html+=H().map(h=>{
+    const p=habitPct(h), c=corr(h);
+    const cr = c ? `<div class="corr">У дні з цим настрій <b>${c.with.toFixed(1)}</b>, без — <b>${c.without.toFixed(1)}</b>
+      <span class="${c.diff>=0?"up":"dn"}">${c.diff>=0?"+":""}${c.diff.toFixed(1)}</span></div>` : "";
+    return `<div class="srow${openStat===h.id?" open":""}" data-id="${h.id}">
+      <button class="srow-h">${h.emoji?`<span class="emo">${esc(h.emoji)}</span>`:""}<span class="nm">${esc(h.name)}</span><span class="pct" style="color:${col(p)}">${Math.round(p*100)}%</span></button>
+      <div class="srow-bar"><i style="width:${p*100}%;background:${grad(col(p))}"></i></div>
+      <div class="mini">${miniGrid(h)}</div>${openStat===h.id?cr:""}</div>`;
+  }).join("");
+  const tags={}; for(let i=0;i<=dayIndex();i++) (S.days[dateKey(i)]?.tags||[]).forEach(t=>tags[t]=(tags[t]||0)+1);
+  const top=Object.entries(tags).sort((a,b)=>b[1]-a[1]).slice(0,6), mx=top[0]?.[1]||1;
+  if(top.length) html+=`<p class="h" style="margin-top:26px">Що було найчастіше</p>`+top.map(([t,n])=>
+    `<div class="tagbar"><span class="t">${esc(t)}</span><span class="b"><i style="width:${n/mx*100}%"></i></span><span class="c">${n}</span></div>`).join("");
+  box.innerHTML=html;
+  box.querySelectorAll(".srow-h").forEach(b=>b.onclick=()=>{ const id=b.parentElement.dataset.id; openStat=openStat===id?null:id; buzz(); drawStats(); });
+}
+
+/* ═══ цілі ═══ */
+function drawGoals(){
+  ["short","mid","long"].forEach(k=>{
+    const box=$("#g-"+k), list=S.goals[k]; box.innerHTML="";
+    if(!list.length){ box.innerHTML='<div class="empty">Порожньо</div>'; return; }
+    list.forEach((g,i)=>{
+      const el=document.createElement("div"); el.className="task"+(g.done?" done":"");
+      el.innerHTML=`<div class="box"><svg viewBox="0 0 24 24"><path d="M5 13l4.5 4.5L19 7"/></svg></div><div class="task-name">${esc(g.text)}</div>
+        <div class="tools" style="display:flex"><button data-a="edit">✎</button></div>`;
+      el.querySelector(".tools button").onclick=async e=>{ e.stopPropagation(); const r=await ask({title:"Ціль",value:g.text,del:true}); if(!r) return;
+        if(r.del) list.splice(i,1); else g.text=r.value.slice(0,90); save(); drawGoals(); };
+      el.onclick=()=>{ g.done=!g.done; buzz(); save(); drawGoals(); }; box.appendChild(el);
+    });
+  });
+}
+document.querySelectorAll(".goal-add button").forEach(b=>{
+  const k=b.dataset.k, input=document.querySelector(`.goal-add input[data-k="${k}"]`);
+  const add=()=>{ const v=input.value.trim(); if(!v) return; S.goals[k].push({text:v.slice(0,90),done:false}); input.value=""; save(); drawGoals(); };
+  b.onclick=add; input.onkeydown=e=>{ if(e.key==="Enter") add(); };
+});
+
+/* ═══ експорт / імпорт ═══ */
+$("#exp").onclick=()=>{
+  const blob=new Blob([JSON.stringify(S,null,2)],{type:"application/json"}), a=document.createElement("a");
+  a.href=URL.createObjectURL(blob); a.download=`100-${nick}-${today()}.json`; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000); flash("експортовано");
+};
+$("#imp").onclick=()=>$("#impFile").click();
+$("#impFile").onchange=async e=>{
+  const f=e.target.files[0]; if(!f) return;
+  try{ const data=JSON.parse(await f.text()); if(!data.days||!data.habits) throw 0;
+    const r=await ask({title:"Замінити всі дані файлом?",value:f.name,ok:"Замінити"}); if(!r) return;
+    normalize(data); save(); firstGrid=true; refresh(); flash("імпортовано"); }
+  catch(err){ flash("файл не підходить"); }
+  e.target.value="";
+};
+
+/* ═══ картинка для сторіс ═══ */
+function renderCard(){
+  const W=1080,H=1350, cv=document.createElement("canvas"); cv.width=W; cv.height=H; const g=cv.getContext("2d");
+  const idx=dayIndex(), rt=ratio(today());
+  g.fillStyle="#000"; g.fillRect(0,0,W,H);
+  const rg=g.createRadialGradient(180,120,0,180,120,900); rg.addColorStop(0,"rgba(255,179,64,.30)"); rg.addColorStop(1,"rgba(0,0,0,0)");
+  g.fillStyle=rg; g.fillRect(0,0,W,H);
+  const rg2=g.createRadialGradient(W-100,H-200,0,W-100,H-200,800); rg2.addColorStop(0, rt ? colC(rt,.22) : "rgba(110,110,128,.22)"); rg2.addColorStop(1,"rgba(0,0,0,0)");
+  g.fillStyle=rg2; g.fillRect(0,0,W,H);
+  const F='"Inter",-apple-system,"Segoe UI",Roboto,sans-serif';
+  g.textBaseline="alphabetic"; g.fillStyle="#fff"; g.font=`800 230px ${F}`;
+  const num=String(Math.min(idx+1,100)); g.fillText(num,80,300);
+  const nw=g.measureText(num).width;
+  g.fillStyle="rgba(235,235,245,.6)"; g.font=`500 48px ${F}`; g.fillText("зі 100 днів",80+nw+28,300);
+  g.fillStyle="rgba(235,235,245,.38)"; g.font=`500 36px ${F}`; g.fillText(new Date().toLocaleDateString("uk-UA",{day:"numeric",month:"long"}),80,365);
+  const gx=80, gy=430, cs=82, gap=10;
+  for(let i=0;i<100;i++){
+    const k=dateKey(i), r=ratio(k), x=gx+(i%10)*(cs+gap), y=gy+Math.floor(i/10)*(cs+gap);
+    g.fillStyle = i>idx ? "rgba(255,255,255,.04)" : (r===0 ? (isRest(k)?"rgba(255,255,255,.08)":"rgba(255,69,58,.16)") : "rgba(255,255,255,.06)");
+    rr(g,x,y,cs,cs,12); g.fill();
+    if(r>0){ const hgt=cs*r; g.fillStyle=colC(r); rr(g,x,y+cs-hgt,cs,hgt,12); g.fill(); }
+    if(i===idx){ g.strokeStyle="#fff"; g.lineWidth=4; rr(g,x-8,y-8,cs+16,cs+16,16); g.stroke(); }
+  }
+  const s=streak();
+  g.fillStyle="#34C759"; g.font=`700 64px ${F}`; g.fillText(String(s),80,H-110);
+  const sw=g.measureText(String(s)).width;
+  g.fillStyle="rgba(235,235,245,.5)"; g.font=`500 36px ${F}`; g.fillText(s===1?"день поспіль":"днів поспіль",80+sw+18,H-110);
+  g.textAlign="right"; g.fillStyle="#FFB340"; g.font=`800 56px ${F}`; g.fillText("100",W-80,H-110);
+  g.fillStyle="rgba(235,235,245,.38)"; g.font=`500 32px ${F}`; g.fillText(nick+(S.modes.length>1?" · "+modeName():""),W-80,H-160);
+  return cv;
+}
+function shareCard(){
+  const url=renderCard().toDataURL("image/png"), name=`100-day-${dayIndex()+1}.png`;
+  const bin=atob(url.split(",")[1]), u8=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) u8[i]=bin.charCodeAt(i);
+  const file=new File([u8],name,{type:"image/png"});
+  const showImg=()=>overlay({label:"Сторіс", title:"", btn:"Закрити",
+    html:`<img src="${url}" alt="" style="width:100%;border-radius:18px;display:block;margin-bottom:14px;box-shadow:0 20px 60px rgba(0,0,0,.4)">
+      <div class="stat">${"ontouchstart" in window ? "Утримай картинку, щоб зберегти" : `<a href="${url}" download="${name}" style="color:var(--accent);font-weight:550">Завантажити PNG</a>`}</div>`});
+  const mobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (navigator.maxTouchPoints>1 && /Mac/.test(navigator.platform));
+  if(!mobile){
+    const a=document.createElement("a"); a.href=URL.createObjectURL(file); a.download=name;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+    flash("завантажено "+name); return;
+  }
+  if(navigator.canShare && navigator.canShare({files:[file]})){
+    navigator.share({files:[file]}).catch(e=>{ if(e?.name!=="AbortError") showImg(); }); return;
+  }
+  showImg();
+}
+function rr(g,x,y,w,h,r){ r=Math.min(r,w/2,h/2); g.beginPath(); g.moveTo(x+r,y); g.arcTo(x+w,y,x+w,y+h,r); g.arcTo(x+w,y+h,x,y+h,r); g.arcTo(x,y+h,x,y,r); g.arcTo(x,y,x+w,y,r); g.closePath(); }
+$("#share").onclick=()=>{ buzz(); try{ shareCard(); }catch(e){ flash("не вдалося: "+e.message); } };
+
+/* ═══ навігація ═══ */
+let prevPanel=0;
+function showPanel(n){
+  document.querySelectorAll(".panel").forEach((p,i)=>{ p.classList.remove("back"); if(i===n && n<prevPanel) p.classList.add("back"); p.classList.toggle("on",i===n); });
+  if(n<4){ $("#pill").style.transform=`translateX(${n*100}%)`; document.querySelectorAll(".seg button").forEach((b,i)=>b.setAttribute("aria-selected",i===n)); }
+  prevPanel=n; hideTip(); window.scrollTo({top:0,behavior:reduced?"auto":"smooth"});
+}
+function tab(n){ cur={n,key:today()}; showPanel(n); render(); }
+function openDay(key){
+  buzz(); if(key===today()){ tab(0); return; }
+  cur={n:4,key}; $("#selLabel").textContent=human(key)+" · день "+(dayIndex(key)+1); showPanel(4); render();
+}
+document.querySelectorAll(".seg button").forEach(b=>b.onclick=()=>tab(+b.dataset.t));
+$("#back").onclick=()=>tab(1);
+$("#profBack").onclick=()=>tab(profFrom);
+$("#who").onclick=()=>{ buzz(); if(cur.n===5){ tab(profFrom); return; } profFrom=cur.n===4?1:cur.n; cur={n:5,key:today()}; S.achNew=false; save(); avatarDot(); showPanel(5); render(); };
+document.addEventListener("keydown",e=>{
+  if($("#app").hidden || !$("#sheet").hidden) return;
+  if(/INPUT|TEXTAREA/.test(document.activeElement?.tagName)) return;
+  if(e.key>="1"&&e.key<="4") tab(+e.key-1);
+  if(e.key==="Escape"&&cur.n===4) tab(1);
+  if(e.key==="Escape"&&cur.n===5) tab(profFrom);
+});
+let tx=0,ty=0,tt=0;
+document.addEventListener("touchstart",e=>{ tx=e.touches[0].clientX; ty=e.touches[0].clientY; tt=Date.now(); },{passive:true});
+document.addEventListener("touchend",e=>{
+  if($("#app").hidden || !$("#sheet").hidden || !$("#fact").hidden) return;
+  if(/INPUT|TEXTAREA/.test(document.activeElement?.tagName)) return;
+  const dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
+  if(Math.abs(dx)<60 || Math.abs(dy)>50 || Date.now()-tt>600) return;
+  if(cur.n===4){ if(dx>0) tab(1); return; }
+  if(cur.n===5){ if(dx>0) tab(profFrom); return; }
+  const n=cur.n+(dx<0?1:-1); if(n>=0&&n<=3) tab(n);
+},{passive:true});
+
+/* ═══ північ ═══ */
+function checkDate(){
+  if($("#app").hidden) return;
+  if(curDate!==today()){ curDate=today(); $("#date").textContent=headDate(); tab(0); drawGrid(); setTimeout(morning,300); }
+}
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden){ checkDate(); pullCloud(); } });
+setInterval(()=>{ checkDate(); if(!document.hidden) pullExt(); },60000);
+
+/* ═══ оверлеї ═══ */
+let ovChain=Promise.resolve();
+function overlay(o){ ovChain=ovChain.then(()=>showOverlay(o)); return ovChain; }
+function showOverlay({label,title,html,btn,big=false,fx=false}){
+  return new Promise(res=>{
+    if(fx) setTimeout(()=>confetti(null,70),250);
+    $("#factN").textContent=label; const ft=$("#factT"); ft.textContent=title; ft.classList.toggle("big",big);
+    $("#factS").innerHTML=html; $("#factGo").textContent=btn;
+    const el=$("#fact"); el.hidden=false; el.scrollTop=0; requestAnimationFrame(()=>el.classList.remove("hide"));
+    $("#factGo").onclick=()=>{ el.classList.add("hide"); setTimeout(()=>{ el.hidden=true; res(); },450); };
+  });
+}
+function showFact(){ const i=((dayIndex()%100)+100)%100, f=FACTS[i]; S.lastFact=today(); save();
+  return overlay({label:"Факт дня "+(i+1), title:f.t, html:esc(f.s), btn:"Почати день"}); }
+function showWeek(w){
+  const st=weekStats(w);
+  return overlay({label:"Підсумок", title:"Тиждень "+(w+1)+" позаду", btn:"Далі", html:`<div class="wk">${weekCells(w)}</div>
+    <div class="stat"><b>${st.full}</b> з ${st.n} днів повних<br>середнє виконання <b>${Math.round(st.avg*100)}%</b>${st.mood?`<br>настрій <b>${st.mood.toFixed(1)}</b> з 10`:""}${st.top?`<br>найчастіше: <b>${esc(st.top)}</b>`:""}</div>`});
+}
+async function morning(){
+  if(S.set.facts!==false && S.lastFact!==today()) await showFact();
+  const w=Math.floor(dayIndex()/7);
+  if(w>0 && (S.lastWeek||0)<w){ await showWeek(w-1); S.lastWeek=w; save(); }
+}
+async function celebrate(){
+  const cell=document.querySelector(".cell.today");
+  cell?.scrollIntoView({behavior:reduced?"auto":"smooth",block:"center"});
+  await new Promise(r=>setTimeout(r,420));
+  confetti(cell);
+  const day=dayIndex()+1;
+  if(!MILESTONES.includes(day) || S.ms[day]) return;
+  S.ms[day]=true; save();
+  setTimeout(()=>confetti(null,80),500);
+  const txt={7:"Перший тиждень повністю. Найважче позаду — звичка вже почала формуватись.",
+    14:"Два тижні. За даними досліджень, саме тут більшість кидає. Ти ні.",
+    30:"Місяць. Це вже не експеримент, це спосіб жити.",
+    50:"Половина. Подивись на сітку — це зробив ти, по одній клітинці на день.",
+    75:"Три чверті. Фініш видно.",
+    100:"Сто днів. Одна сітка, повністю твоя."};
+  await overlay({label:"Рубіж", title:String(day), big:true, html:`<div class="stat">${txt[day]}</div>`, btn:day===100?"Дякую":"Далі"});
+}
+
+/* ═══ ачівки ═══ */
+function achCtx(){
+  const idx=Math.min(dayIndex(),99), ms=S.modes.filter(m=>habitsOf(m.id).length), t=today(), I=S.int.social;
+  let full=0,moods=0,notes=0,steps=0,back=false,early=false,balance=false,perfect=false,detox=false,prevZero=false;
+  for(let i=0;i<=idx;i++){
+    const k=dateKey(i), d=S.days[k]||{}, rs=ms.map(m=>ratio(k,m.id));
+    const anyFull=rs.some(r=>r===1), allZero=rs.length>0 && rs.every(r=>r===0) && !isRest(k);
+    if(anyFull){ full++; if(prevZero) back=true; if(d.fullAt!=null && d.fullAt<12) early=true; if(d.mood===10) perfect=true; }
+    if(rs.length>1 && rs.every(r=>r===1)) balance=true;
+    if(d.mood) moods++;
+    if((d.note||"").trim().length>2) notes++;
+    if(d.steps) steps=Math.max(steps,d.steps);
+    if(I.on && I.since && k>=I.since && k<t && (d.opens||0)<=3) detox=true;
+    prevZero=allZero;
+  }
+  const best=Math.max(0,...ms.map(m=>Math.max(bestStreak(m.id),streak(m.id))));
+  return {best,full,day:dayIndex()+1,moods,notes,steps,back,early,balance,perfect,detox,again:S.history.length>0};
+}
+function checkAch(){
+  if($("#app").hidden) return;
+  const c=achCtx(), fresh=ACH.filter(a=>!S.ach[a.id] && a.p(c)>=1);
+  if(!fresh.length) return;
+  fresh.forEach(a=>S.ach[a.id]=today()); S.achNew=true; save(); avatarDot();
+  if(cur.n===5) drawProfile();
+  if(fresh.length>3){
+    overlay({label:"Нові ачівки", title:fresh.map(a=>a.e).join(" "), fx:true, btn:"Клас",
+      html:`<div class="stat">${fresh.map(a=>`<b>${esc(a.t)}</b> · ${esc(a.d)}`).join("<br>")}</div>`});
+  } else fresh.forEach(a=>overlay({label:"Ачівка", title:a.e, big:true, fx:true, btn:"Клас",
+      html:`<div class="ach-t">${esc(a.t)}</div><div class="stat">${esc(a.d)}</div>`}));
+}
+function avatarDot(){ $("#who").classList.toggle("dot",!!S.achNew); }
+
+/* ═══ профіль ═══ */
+function copyText(t){
+  (navigator.clipboard?.writeText(t)||Promise.reject()).then(()=>flash("скопійовано")).catch(()=>{
+    const ta=document.createElement("textarea"); ta.value=t; document.body.appendChild(ta); ta.select();
+    try{ document.execCommand("copy"); flash("скопійовано"); }catch(e){ flash("не вдалося скопіювати"); } ta.remove();
+  });
+}
+function codeBlock(t){ return `<div class="code"><pre>${esc(t)}</pre><button data-copy="${encodeURIComponent(t)}">Копіювати</button></div>`; }
+function habitOptions(sel){
+  return `<option value="">не підключено</option>`+S.habits.map(h=>`<option value="${h.id}"${h.id===sel?" selected":""}>${esc((h.emoji?h.emoji+" ":"")+h.name)} · ${esc(modeName(h.mode))}</option>`).join("");
+}
+function drawProfile(){
+  const c=achCtx(), got=ACH.filter(a=>S.ach[a.id]).length, I=S.int, td=S.days[today()]||{};
+  let html=`<div class="prof-hero"><div class="avatar">${esc(nick[0]?.toUpperCase()||"?")}</div>
+      <div><b>${esc(nick)}</b><span>Челендж ${S.round} · день ${Math.min(dayIndex()+1,100)} зі 100</span></div></div>
+    <div class="kpis">
+      <div class="kpi"><b>${c.best}</b><span>найкраща серія</span></div>
+      <div class="kpi"><b>${c.full}</b><span>повних днів</span></div>
+      <div class="kpi"><b>${got}<span style="font-size:15px;color:var(--faint)">/${ACH.length}</span></b><span>ачівок</span></div></div>
+    <p class="h">Ачівки</p><div class="achs">`;
+  html+=ACH.map(a=>{ const p=Math.min(1,a.p(c)), ok=!!S.ach[a.id];
+    return `<div class="ach ${ok?"got":"lock"}"><div class="e">${a.e}</div><div class="t">${esc(a.t)}</div><div class="d">${esc(a.d)}</div>
+      ${!ok && p>0 && p<1 ? `<div class="pb"><i style="width:${p*100}%"></i></div>`:""}</div>`; }).join("");
+  html+=`</div>
+    <p class="h">Режими</p><div class="pcard">`;
+  html+=S.modes.map(m=>`<div class="prow"><div>${esc(m.name)}<small>${habitsOf(m.id).length} звичок · серія ${streak(m.id)}</small></div>
+      <button class="edit" data-mode="${m.id}">Змінити</button></div>`).join("");
+  if(S.modes.length<4) html+=`<div class="prow"><button class="edit" id="pAddMode">+ Додати режим</button></div>`;
+  html+=`</div>
+    <p class="h" style="margin-top:22px">iPhone: кроки й соцмережі</p><div class="pcard">`;
+  if(!cloud){
+    html+=`<p>Щоб кроки зі «Здоров'я» і відкриття соцмереж підтягувались самі, потрібен Firebase: iPhone відправляє дані в хмару, апка їх забирає. Зараз синхронізація вимкнена, дані живуть лише на цьому пристрої.</p>`;
+  } else {
+    const base=`https://firestore.googleapis.com/v1/projects/${FB.projectId}/databases/(default)/documents`;
+    const url=`${base}:commit?key=${FB.apiKey}`;
+    const docName=`projects/${FB.projectId}/databases/(default)/documents/ext/${nick}_ДАТА`;
+    const jSocial=JSON.stringify({writes:[{update:{name:docName,fields:{}},updateMask:{fieldPaths:[]},updateTransforms:[{fieldPath:"n",increment:{integerValue:"1"}}]}]});
+    const jSteps=JSON.stringify({writes:[{update:{name:docName,fields:{steps:{stringValue:"КРОКИ"}}},updateMask:{fieldPaths:["steps"]}}]});
+    html+=`<div class="live"><div><b>${td.steps!=null?fmt(td.steps):"—"}</b><span>кроків сьогодні</span></div>
+        <div><b>${I.social.on?(td.opens||0):"—"}</b><span>відкриттів соцмереж</span></div></div>
+      <div class="prow"><div>Звичка для кроків</div><select id="pStepsH">${habitOptions(I.steps.habit)}</select></div>
+      <div class="prow"><div>Ціль кроків</div><input id="pStepsG" type="number" inputmode="numeric" value="${I.steps.goal}"></div>
+      <div class="prow"><div>Рахувати соцмережі<small>звичка виконана, поки не перевищено ліміт</small></div><button class="tog${I.social.on?" on":""}" id="pSocOn"></button></div>
+      <div class="prow"><div>Звичка для соцмереж</div><select id="pSocH">${habitOptions(I.social.habit)}</select></div>
+      <div class="prow"><div>Ліміт відкриттів на день</div><input id="pSocL" type="number" inputmode="numeric" value="${I.social.limit}"></div>
+      <details class="how"><summary>Як налаштувати «Команди» на iPhone</summary>
+        <ol>
+          <li>Апка <b>Команди</b> → вкладка <b>Автоматизація</b> → <b>+</b> → <b>Програма</b>. Обери Instagram, TikTok, X, усе, що хочеш рахувати. Умова <b>Відкрито</b>, режим <b>Запускати негайно</b>.</li>
+          <li>Дія <b>Форматувати дату</b>: Поточна дата, формат <b>Власний</b>, <b>yyyy-MM-dd</b>.</li>
+          <li>Дія <b>Текст</b>, встав JSON нижче і заміни слово <b>ДАТА</b> на змінну «Форматована дата».</li>
+          ${codeBlock(jSocial)}
+          <li>Дія <b>Отримати вміст URL</b>, встав адресу нижче. Метод <b>POST</b>, заголовок <b>Content-Type</b> = <b>application/json</b>, тіло запиту <b>Файл</b> → змінна «Текст».</li>
+          ${codeBlock(url)}
+          <li>Для кроків друга автоматизація: <b>Час доби</b>, наприклад 21:00 і 23:00, <b>Запускати негайно</b>. Дії: <b>Знайти вибірки Здоров'я</b> (Кроки, дата сьогодні) → <b>Обчислити статистику: Сума</b> → <b>Округлити число</b> → та сама дата → <b>Текст</b> з JSON нижче, де <b>ДАТА</b> і <b>КРОКИ</b> замінені змінними → той самий запит.</li>
+          ${codeBlock(jSteps)}
+          <li>Кроки ще можна оновлювати в автоматизації соцмереж: додай туди ті самі дії зі Здоров'я і другий запит. iPhone віддає дані «Здоров'я» тільки розблокованим, тому нічна автоматизація при заблокованому екрані пропускається.</li>
+        </ol></details>`;
+  }
+  html+=`</div>
+    <p class="h" style="margin-top:22px">Налаштування</p><div class="pcard">
+      <div class="prow"><div>Темна тема</div><button class="tog${document.documentElement.dataset.theme!=="light"?" on":""}" id="pTheme"></button></div>
+      <div class="prow"><div>Факт дня зранку</div><button class="tog${S.set.facts!==false?" on":""}" id="pFacts"></button></div>
+      <div class="prow"><div>Вібрація</div><button class="tog${S.set.vibe!==false?" on":""}" id="pVibe"></button></div>
+      <div class="prow"><div>Синхронізація<small>${cloud?"Firebase, ті самі дані на всіх пристроях":"вимкнена, дані лише на цьому пристрої"}</small></div>
+        <span style="color:${cloud?"var(--green)":"var(--faint)"};font-size:14px;font-weight:600">${cloud?"увімкнена":"офлайн"}</span></div>
+    </div>`;
+  const top=$("#profTop"); top.innerHTML=html;
+
+  top.querySelectorAll("[data-copy]").forEach(b=>b.onclick=()=>copyText(decodeURIComponent(b.dataset.copy)));
+  top.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>editMode(S.modes.find(m=>m.id===b.dataset.mode)));
+  $("#pAddMode")?.addEventListener("click",addMode);
+  const tg=(id,fn)=>{ const el=$(id); if(el) el.onclick=()=>{ buzz(); fn(); el.classList.toggle("on"); }; };
+  tg("#pTheme",()=>setTheme(document.documentElement.dataset.theme==="light"?"dark":"light"));
+  tg("#pFacts",()=>{ S.set.facts=S.set.facts===false; save(); });
+  tg("#pVibe",()=>{ S.set.vibe=S.set.vibe===false; save(); });
+  tg("#pSocOn",()=>{ I.social.on=!I.social.on; if(I.social.on && !I.social.since) I.social.since=today(); save(); drawGrid(); });
+  const num=(id,fn)=>{ const el=$(id); if(el) el.onchange=()=>{ const v=parseInt(el.value)||0; if(v>0){ fn(v); save(); drawGrid(); } }; };
+  num("#pStepsG",v=>I.steps.goal=v); num("#pSocL",v=>I.social.limit=v);
+  const pick=(id,fn)=>{ const el=$(id); if(el) el.onchange=()=>{ fn(el.value||null); save(); drawGrid(); }; };
+  pick("#pStepsH",v=>I.steps.habit=v); pick("#pSocH",v=>I.social.habit=v);
+
+  const ar=$("#profArchive");
+  ar.innerHTML = S.history.length ? `<p class="h">Попередні челенджі</p>`+S.history.map((c,n)=>{
+    const m=c.modes[0]||{r:[]}, cells=Array.from({length:100},(_,i)=>{ const r=m.r[i];
+      return r==null?'<i style="opacity:.35"></i>':`<i style="background:${r===0?"rgba(255,69,58,.18)":grad(col(r))}"></i>`; }).join("");
+    return `<div class="arch"><div class="arch-top"><span>Челендж <b>${S.history.length-n}</b> · ${human(c.start)} – ${human(c.end)}</span>
+      <span>${c.days} дн. · серія <b>${Math.max(...c.modes.map(x=>x.best),0)}</b></span></div><div class="mini">${cells}</div></div>`;
+  }).join("") : "";
+}
+$("#restart").onclick=async()=>{
+  const r=await ask({title:"Почати челендж заново",confirm:true,danger:true,ok:"Почати з сьогодні",
+    desc:"Поточна сітка піде в архів профілю. Звички, режими, цілі й ачівки залишаться, оцінки дня й нотатки очистяться."});
+  if(!r) return;
+  const n=Math.min(dayIndex()+1,100);
+  S.history.unshift({start:S.start,end:today(),days:n,modes:S.modes.filter(m=>habitsOf(m.id).length).map(m=>({name:m.name,best:bestStreak(m.id),
+    r:Array.from({length:n},(_,i)=>isRest(dateKey(i))?null:+ratio(dateKey(i),m.id).toFixed(2))}))});
+  S.start=today(); S.days={}; S.ms={}; S.lastWeek=0; S.round=(S.round||1)+1;
+  save(); firstGrid=true; lastStreak=-1; buzz([12,40,18]); tab(0); refresh(); flash("новий челендж, день 1");
+};
+$("#logout").onclick=async()=>{
+  const r=await ask({title:"Вийти з ніка",confirm:true,ok:"Вийти",desc:cloud?"Дані лишаються в хмарі, повернешся тим самим ніком.":"Синхронізації немає, тож дані лишаються лише в цьому браузері."});
+  if(!r) return; try{ localStorage.removeItem("h100:last"); }catch(e){} location.reload();
+};
+
+/* ═══ старт ═══ */
+const nickIn=$("#nick"), enter=$("#enter");
+nickIn.onkeydown=e=>{ if(e.key==="Enter") start(); }; enter.onclick=start;
+async function start(){
+  nick=nickIn.value.trim().toLowerCase().replace(/[^a-zа-яіїєґ0-9_-]/gi,"");
+  if(nick.length<2){ nickIn.focus(); nickIn.style.borderColor="var(--red)"; setTimeout(()=>nickIn.style.borderColor="",1200); return; }
+  try{ localStorage.setItem("h100:last",nick); }catch(e){}
+  enter.textContent="…";
+  await load(); curDate=today();
+  $("#gate").classList.add("hide"); setTimeout(()=>$("#gate").remove(),500);
+  $("#app").hidden=false; $("#who").textContent=nick[0].toUpperCase(); avatarDot();
+  $("#date").textContent=headDate();
+  lastStreak=-1; drawGrid(); tab(0);
+  try{ document.fonts?.load('800 100px "Inter"'); document.fonts?.load('500 40px "Inter"'); }catch(e){}
+  setTimeout(morning,700);
+  setTimeout(()=>{ checkAch(); pullExt(); },1300);
+}
+try{ const last=localStorage.getItem("h100:last"); if(last) nickIn.value=last; }catch(e){}
+if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(()=>{});
+</script>
+<script>
+window.addEventListener("error",e=>{
+  const g=document.getElementById("gate");
+  if(g&&!g.classList.contains("hide")){ const s=document.createElement("div"); s.style.cssText="color:#FF453A;font-size:13px;margin-top:16px;line-height:1.4"; s.textContent="Помилка: "+(e.message||e); g.querySelector(".gate-in").appendChild(s); }
+});
+</script>
+</body>
+</html>
