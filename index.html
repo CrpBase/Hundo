@@ -382,7 +382,7 @@ details.how li b{color:var(--text);font-weight:600}
     <div class="gate-sub">Сто днів, одна сітка</div>
     <input class="nick" id="nick" placeholder="нік" autocapitalize="off" autocorrect="off" spellcheck="false">
     <button class="go" id="enter">Увійти</button>
-    <div class="build">build 21</div>
+    <div class="build">build 22</div>
   </div>
 </div>
 
@@ -614,8 +614,6 @@ const ACH = [
   {id:"balance",e:"⚖️", t:"Баланс",          d:"Закрити всі режими за один день",        p:c=>+c.balance},
   {id:"mood7",  e:"🎭", t:"Самоспостерігач", d:"Оцінити 7 днів",                         p:c=>c.moods/7},
   {id:"notes10",e:"✍️", t:"Літописець",      d:"10 нотаток",                             p:c=>c.notes/10},
-  {id:"steps",  e:"👟", t:"10 000",          d:"10 тисяч кроків з iPhone за день",       p:c=>c.steps/10000},
-  {id:"detox",  e:"🧘", t:"Детокс",          d:"День, коли соцмережі відкрито ≤ 3 разів",p:c=>+c.detox},
   {id:"perfect",e:"☀️", t:"Ідеальний день",  d:"Все закрито і настрій 10",               p:c=>+c.perfect},
   {id:"again",  e:"🔄", t:"Друга спроба",    d:"Почати челендж заново",                  p:c=>+c.again}
 ];
@@ -755,6 +753,7 @@ const habitsOf = m => S.habits.filter(h=>h.mode===m);
 const H = () => habitsOf(S.mode);
 const modeName = (m=S.mode) => S.modes.find(x=>x.id===m)?.name||"";
 function autoOf(h,key){
+  return null;
   const d=S.days[key], I=S.int;
   if(I.steps.habit===h.id && d?.steps!=null) return {kind:"steps", done:d.steps>=I.steps.goal, v:d.steps, max:I.steps.goal};
   if(I.social.habit===h.id && I.social.on && I.social.since && key>=I.social.since){ const o=d?.opens||0; return {kind:"social", done:o<=I.social.limit, v:o, max:I.social.limit}; }
@@ -1354,36 +1353,7 @@ function drawProfile(){
       <button class="edit" data-mode="${m.id}">Змінити</button></div>`).join("");
   if(S.modes.length<4) html+=`<div class="prow"><button class="edit" id="pAddMode">+ Додати режим</button></div>`;
   html+=`</div>
-    <p class="h" style="margin-top:22px">iPhone: кроки й соцмережі</p><div class="pcard">`;
-  if(!cloud){
-    html+=`<p>Щоб кроки зі «Здоров'я» і відкриття соцмереж підтягувались самі, потрібен Firebase: iPhone відправляє дані в хмару, апка їх забирає. Зараз синхронізація вимкнена, дані живуть лише на цьому пристрої.</p>`;
-  } else {
-    const base=`https://firestore.googleapis.com/v1/projects/${FB.projectId}/databases/(default)/documents`;
-    const url=`${base}:commit?key=${FB.apiKey}`;
-    const docName=`projects/${FB.projectId}/databases/(default)/documents/ext/${nick}_ДАТА`;
-    const jSocial=JSON.stringify({writes:[{update:{name:docName,fields:{}},updateMask:{fieldPaths:[]},updateTransforms:[{fieldPath:"n",increment:{integerValue:"1"}}]}]});
-    const jSteps=JSON.stringify({writes:[{update:{name:docName,fields:{steps:{stringValue:"КРОКИ"}}},updateMask:{fieldPaths:["steps"]}}]});
-    html+=`<div class="live"><div><b>${td.steps!=null?fmt(td.steps):"—"}</b><span>кроків сьогодні</span></div>
-        <div><b>${I.social.on?(td.opens||0):"—"}</b><span>відкриттів соцмереж</span></div></div>
-      <div class="prow"><div>Звичка для кроків</div><select id="pStepsH">${habitOptions(I.steps.habit)}</select></div>
-      <div class="prow"><div>Ціль кроків</div><input id="pStepsG" type="number" inputmode="numeric" value="${I.steps.goal}"></div>
-      <div class="prow"><div>Рахувати соцмережі<small>звичка виконана, поки не перевищено ліміт</small></div><button class="tog${I.social.on?" on":""}" id="pSocOn"></button></div>
-      <div class="prow"><div>Звичка для соцмереж</div><select id="pSocH">${habitOptions(I.social.habit)}</select></div>
-      <div class="prow"><div>Ліміт відкриттів на день</div><input id="pSocL" type="number" inputmode="numeric" value="${I.social.limit}"></div>
-      <details class="how"><summary>Як налаштувати «Команди» на iPhone</summary>
-        <ol>
-          <li>Апка <b>Команди</b> → вкладка <b>Автоматизація</b> → <b>+</b> → <b>Програма</b>. Обери Instagram, TikTok, X, усе, що хочеш рахувати. Умова <b>Відкрито</b>, режим <b>Запускати негайно</b>.</li>
-          <li>Дія <b>Форматувати дату</b>: Поточна дата, формат <b>Власний</b>, <b>yyyy-MM-dd</b>.</li>
-          <li>Дія <b>Текст</b>, встав JSON нижче і заміни слово <b>ДАТА</b> на змінну «Форматована дата».</li>
-          ${codeBlock(jSocial)}
-          <li>Дія <b>Отримати вміст URL</b>, встав адресу нижче. Метод <b>POST</b>, заголовок <b>Content-Type</b> = <b>application/json</b>, тіло запиту <b>Файл</b> → змінна «Текст».</li>
-          ${codeBlock(url)}
-          <li>Для кроків друга автоматизація: <b>Час доби</b>, наприклад 21:00 і 23:00, <b>Запускати негайно</b>. Дії: <b>Знайти вибірки Здоров'я</b> (Кроки, дата сьогодні) → <b>Обчислити статистику: Сума</b> → <b>Округлити число</b> → та сама дата → <b>Текст</b> з JSON нижче, де <b>ДАТА</b> і <b>КРОКИ</b> замінені змінними → той самий запит.</li>
-          ${codeBlock(jSteps)}
-          <li>Кроки ще можна оновлювати в автоматизації соцмереж: додай туди ті самі дії зі Здоров'я і другий запит. iPhone віддає дані «Здоров'я» тільки розблокованим, тому нічна автоматизація при заблокованому екрані пропускається.</li>
-        </ol></details>`;
-  }
-  html+=`</div>
+    </div>
     <p class="h" style="margin-top:22px">Налаштування</p><div class="pcard">
       <div class="prow"><div>Темна тема</div><button class="tog${document.documentElement.dataset.theme!=="light"?" on":""}" id="pTheme"></button></div>
       <div class="prow"><div>Факт дня зранку</div><button class="tog${S.set.facts!==false?" on":""}" id="pFacts"></button></div>
