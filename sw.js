@@ -1,4 +1,4 @@
-const CACHE = "h100-v13";
+const CACHE = "h100-v15";
 const CORE = ["./", "./index.html", "./manifest.json"];
 
 self.addEventListener("install", e => {

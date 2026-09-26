@@ -102,10 +102,6 @@ button{cursor:pointer}
   transition:transform .3s var(--spring),background .3s}
 .ib:active{transform:scale(.9)}
 .ib svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.mring{width:30px;height:30px;transform:rotate(-90deg);cursor:pointer}
-.mring circle{fill:none;stroke-width:3;stroke-linecap:round}
-.mring .bg{stroke:var(--soft)}
-.mring .fg{stroke-dasharray:59.7;stroke-dashoffset:59.7;transition:stroke-dashoffset .7s var(--ease),stroke .5s}
 .seg{position:relative;display:grid;grid-template-columns:repeat(4,1fr);background:rgba(118,118,128,.16);border-radius:11px;padding:2px}
 .seg-pill{position:absolute;top:2px;bottom:2px;width:calc((100% - 4px)/4);background:var(--surface-2);
   border-radius:9px;box-shadow:0 3px 8px rgba(0,0,0,.28);transition:transform .42s var(--spring)}
@@ -287,6 +283,20 @@ button{cursor:pointer}
 #tip b{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
 #tip .r{color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #tip .r.y{color:var(--green)}
+/* перемикач режимів у шапці */
+.who{gap:10px}
+.mswitch{position:relative;display:flex;background:rgba(118,118,128,.16);border-radius:17px;padding:2px}
+.mswitch[hidden]{display:none}
+.mswitch .th{position:absolute;top:2px;bottom:2px;left:0;width:0;border-radius:15px;background:var(--text);
+  box-shadow:0 2px 8px rgba(0,0,0,.25);transition:transform .45s var(--spring),width .45s var(--spring)}
+.mswitch .th.still{transition:none}
+.mswitch button{position:relative;z-index:1;padding:6px 12px;font-size:13px;font-weight:600;color:var(--dim);
+  white-space:nowrap;display:flex;align-items:center;gap:5px;transition:color .3s}
+.mswitch button.on{color:var(--bg)}
+.mswitch button i{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);
+  transform:scale(0);transition:transform .35s var(--spring)}
+.mswitch button.full i{transform:scale(1)}
+@media (max-width:380px){ .today .wd{display:none} .mswitch button{padding:6px 10px} }
 /* режими */
 .modes{display:flex;gap:6px;margin:0 0 18px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .modes::-webkit-scrollbar{display:none}
@@ -372,7 +382,7 @@ details.how li b{color:var(--text);font-weight:600}
     <div class="gate-sub">Сто днів, одна сітка</div>
     <input class="nick" id="nick" placeholder="нік" autocapitalize="off" autocorrect="off" spellcheck="false">
     <button class="go" id="enter">Увійти</button>
-    <div class="build">build 19</div>
+    <div class="build">build 21</div>
   </div>
 </div>
 
@@ -392,9 +402,7 @@ details.how li b{color:var(--text);font-weight:600}
     <div class="top">
       <div class="today" id="date"></div>
       <div class="who">
-        <svg class="mring" id="mring" viewBox="0 0 24 24"><circle class="bg" cx="12" cy="12" r="9.5"/><circle class="fg" id="mringFg" cx="12" cy="12" r="9.5"/>
-          <text id="mringLbl" x="12" y="12" transform="rotate(90 12 12)" text-anchor="middle" dominant-baseline="central" font-size="10" font-weight="700">0</text></svg>
-        <button class="ib" id="theme" aria-label="Тема"></button>
+        <div class="mswitch" id="mswitch" role="tablist" aria-label="Режим"></div>
         <button class="avatar" id="who" aria-label="Профіль"></button></div>
     </div>
     <div class="seg" role="tablist">
@@ -408,7 +416,6 @@ details.how li b{color:var(--text);font-weight:600}
 
   <div class="shell">
   <section class="panel on" data-p="0">
-    <div class="modes" id="modes"></div>
     <div class="count">
       <b id="dayNum">1</b><span>зі 100</span>
       <div class="streak"><b id="streakNum">0</b><i>днів поспіль</i></div>
@@ -640,8 +647,7 @@ function setTheme(t){
 }
 (function(){ let t="dark"; try{ t=localStorage.getItem("h100:theme")||"dark"; }catch(e){} setTheme(t); })();
 
-$("#theme").onclick=()=>{ buzz(); setTheme(document.documentElement.dataset.theme==="light"?"dark":"light"); if(cur.n===5) drawProfile(); };
-$("#mring").onclick=()=>{ buzz(); if(cur.n!==0) tab(0); setTimeout(()=>$("#grid").scrollIntoView({behavior:"smooth",block:"center"}),80); };
+
 
 /* ═══ зберігання ═══ */
 function local(op,val){
@@ -758,7 +764,7 @@ function isDone(h,key){ const a=autoOf(h,key); return a ? a.done : !!S.days[key]
 function doneCount(key,m=S.mode){ return habitsOf(m).filter(h=>isDone(h,key)).length; }
 function ratio(key,m=S.mode){ const n=habitsOf(m).length; return n ? doneCount(key,m)/n : 0; }
 function headDate(){ const d=new Date(), w=d.toLocaleDateString("uk-UA",{weekday:"long"});
-  return w[0].toUpperCase()+w.slice(1)+", "+d.toLocaleDateString("uk-UA",{day:"numeric",month:"long"}); }
+  return `<span class="wd">${w[0].toUpperCase()+w.slice(1)}, </span>`+d.toLocaleDateString("uk-UA",{day:"numeric",month:"long"}); }
 const human = k => new Date(k+"T00:00:00").toLocaleDateString("uk-UA",{day:"numeric",month:"short"});
 function streak(m=S.mode){
   let n=0, idx=dayIndex();
@@ -778,13 +784,31 @@ function habitStreak(h){
 
 /* ═══ сітка ═══ */
 function drawModes(){
-  const box=$("#modes"); box.innerHTML="";
-  S.modes.forEach(m=>{
-    const b=document.createElement("button"); b.className="mode"+(m.id===S.mode?" on":""); b.textContent=m.name;
-    b.onclick=()=>{ if(m.id===S.mode){ editMode(m); return; } buzz(); S.mode=m.id; editH=false; firstGrid=true; lastStreak=-1; save(); refresh(); };
-    box.appendChild(b);
+  const box=$("#mswitch"), key=S.modes.map(m=>m.id+":"+m.name).join("|");
+  box.hidden = S.modes.length<2;
+  if(box.dataset.k!==key){
+    box.dataset.k=key; box.innerHTML='<span class="th still"></span>';
+    S.modes.forEach(m=>{
+      const b=document.createElement("button"); b.dataset.id=m.id; b.setAttribute("role","tab");
+      b.innerHTML=`<i></i>${esc(m.name)}`;
+      b.onclick=()=>{
+        let id=m.id;
+        if(id===S.mode){ if(S.modes.length!==2) return; id=S.modes.find(x=>x.id!==S.mode).id; }
+        buzz(); S.mode=id; editH=false; firstGrid=true; lastStreak=-1; save(); refresh();
+      };
+      box.appendChild(b);
+    });
+  }
+  const th=box.querySelector(".th"), t=today();
+  box.querySelectorAll("button").forEach(b=>{
+    const on=b.dataset.id===S.mode; b.classList.toggle("on",on); b.setAttribute("aria-selected",on);
+    b.classList.toggle("full", habitsOf(b.dataset.id).length>0 && ratio(t,b.dataset.id)===1);
   });
-  if(S.modes.length<4){ const a=document.createElement("button"); a.className="mode add"; a.textContent="+"; a.onclick=addMode; box.appendChild(a); }
+  requestAnimationFrame(()=>{
+    const act=box.querySelector("button.on"); if(!act) return;
+    th.style.width=act.offsetWidth+"px"; th.style.transform=`translateX(${act.offsetLeft}px)`;
+    if(th.classList.contains("still")) requestAnimationFrame(()=>th.classList.remove("still"));
+  });
 }
 async function addMode(){
   const r=await ask({title:"Новий режим",ok:"Додати",placeholder:"Наприклад, Спорт"}); if(!r) return;
@@ -803,7 +827,7 @@ function drawGrid(wave){
   for(let i=0;i<100;i++){
     const key=dateKey(i), r=ratio(key), past=i<=idx, rest=isRest(key);
     const c=document.createElement("button");
-    c.className="cell"+(key===t?" today":"")+(has&&past&&r===0&&!rest?" zero":"")+(i>idx?" future":"")+(rest?" rest":"");
+    c.className="cell"+(key===t?" today":"")+(has&&i<idx&&r===0&&!rest?" zero":"")+(i>idx?" future":"")+(rest?" rest":"");
     const f=document.createElement("div"); f.className="fill";
     const c0=col(r);
     f.style.background=grad(c0);
@@ -827,8 +851,6 @@ function drawGrid(wave){
   $("#dayNum").textContent=Math.min(idx+1,100);
   const rt=ratio(t);
   document.documentElement.style.setProperty("--glow", rt===0 ? "#6E6E80" : col(rt));
-  const mf=$("#mringFg"); mf.style.strokeDashoffset=59.7*(1-rt); mf.style.stroke=rt===0?"var(--faint)":col(rt);
-  const ml=$("#mringLbl"); ml.textContent = rt===1 ? "✓" : String(doneCount(t)); ml.style.fill = rt===1 ? col(1) : "var(--dim)";
   const s=streak(), sn=$("#streakNum");
   sn.textContent=s;
   if(s>lastStreak && lastStreak>=0){ sn.classList.remove("pop"); void sn.offsetWidth; sn.classList.add("pop"); }
@@ -1133,31 +1155,34 @@ $("#impFile").onchange=async e=>{
 function renderCard(){
   const W=1080,H=1350, cv=document.createElement("canvas"); cv.width=W; cv.height=H; const g=cv.getContext("2d");
   const idx=dayIndex(), rt=ratio(today());
+  const cs=70, gap=8, GW=10*cs+9*gap, L=(W-GW)/2, R=L+GW, gy=392;
   g.fillStyle="#000"; g.fillRect(0,0,W,H);
   const rg=g.createRadialGradient(180,120,0,180,120,900); rg.addColorStop(0,"rgba(255,179,64,.30)"); rg.addColorStop(1,"rgba(0,0,0,0)");
   g.fillStyle=rg; g.fillRect(0,0,W,H);
   const rg2=g.createRadialGradient(W-100,H-200,0,W-100,H-200,800); rg2.addColorStop(0, rt ? colC(rt,.22) : "rgba(110,110,128,.22)"); rg2.addColorStop(1,"rgba(0,0,0,0)");
   g.fillStyle=rg2; g.fillRect(0,0,W,H);
   const F='"Inter",-apple-system,"Segoe UI",Roboto,sans-serif';
-  g.textBaseline="alphabetic"; g.fillStyle="#fff"; g.font=`800 230px ${F}`;
-  const num=String(Math.min(idx+1,100)); g.fillText(num,80,300);
+  g.textBaseline="alphabetic"; g.textAlign="left";
+  g.fillStyle="#fff"; g.font=`800 190px ${F}`;
+  const num=String(Math.min(idx+1,100)); g.fillText(num,L-8,262);
   const nw=g.measureText(num).width;
-  g.fillStyle="rgba(235,235,245,.6)"; g.font=`500 48px ${F}`; g.fillText("зі 100 днів",80+nw+28,300);
-  g.fillStyle="rgba(235,235,245,.38)"; g.font=`500 36px ${F}`; g.fillText(new Date().toLocaleDateString("uk-UA",{day:"numeric",month:"long"}),80,365);
-  const gx=80, gy=430, cs=82, gap=10;
+  g.fillStyle="rgba(235,235,245,.6)"; g.font=`500 44px ${F}`; g.fillText("зі 100 днів",L+nw+14,262);
+  g.fillStyle="rgba(235,235,245,.4)"; g.font=`500 34px ${F}`;
+  g.fillText(new Date().toLocaleDateString("uk-UA",{day:"numeric",month:"long"})+(S.modes.length>1?"  ·  "+modeName():""),L,325);
   for(let i=0;i<100;i++){
-    const k=dateKey(i), r=ratio(k), x=gx+(i%10)*(cs+gap), y=gy+Math.floor(i/10)*(cs+gap);
-    g.fillStyle = i>idx ? "rgba(255,255,255,.04)" : (r===0 ? (isRest(k)?"rgba(255,255,255,.08)":"rgba(255,69,58,.16)") : "rgba(255,255,255,.06)");
-    rr(g,x,y,cs,cs,12); g.fill();
-    if(r>0){ const hgt=cs*r; g.fillStyle=colC(r); rr(g,x,y+cs-hgt,cs,hgt,12); g.fill(); }
-    if(i===idx){ g.strokeStyle="#fff"; g.lineWidth=4; rr(g,x-8,y-8,cs+16,cs+16,16); g.stroke(); }
+    const k=dateKey(i), r=ratio(k), x=L+(i%10)*(cs+gap), y=gy+Math.floor(i/10)*(cs+gap);
+    g.fillStyle = i>idx ? "rgba(255,255,255,.045)" : (isRest(k) ? "rgba(255,255,255,.09)" : (r===0 && i<idx ? "rgba(255,69,58,.18)" : "rgba(255,255,255,.07)"));
+    rr(g,x,y,cs,cs,11); g.fill();
+    if(r>0){ const hgt=cs*r; g.fillStyle=colC(r); rr(g,x,y+cs-hgt,cs,hgt,11); g.fill(); }
+    if(i===idx){ g.strokeStyle="#fff"; g.lineWidth=4; rr(g,x-7,y-7,cs+14,cs+14,15); g.stroke(); }
   }
-  const s=streak();
-  g.fillStyle="#34C759"; g.font=`700 64px ${F}`; g.fillText(String(s),80,H-110);
+  const s=streak(), fy=gy+10*cs+9*gap+118;
+  g.fillStyle="#34C759"; g.font=`700 64px ${F}`; g.fillText(String(s),L,fy);
   const sw=g.measureText(String(s)).width;
-  g.fillStyle="rgba(235,235,245,.5)"; g.font=`500 36px ${F}`; g.fillText(s===1?"день поспіль":"днів поспіль",80+sw+18,H-110);
-  g.textAlign="right"; g.fillStyle="#FFB340"; g.font=`800 56px ${F}`; g.fillText("100",W-80,H-110);
-  g.fillStyle="rgba(235,235,245,.38)"; g.font=`500 32px ${F}`; g.fillText(nick+(S.modes.length>1?" · "+modeName():""),W-80,H-160);
+  g.fillStyle="rgba(235,235,245,.55)"; g.font=`500 34px ${F}`; g.fillText(s===1?"день поспіль":"днів поспіль",L+sw+16,fy);
+  g.textAlign="right";
+  g.fillStyle="#FFB340"; g.font=`800 60px ${F}`; g.fillText("100",R,fy);
+  g.fillStyle="rgba(235,235,245,.4)"; g.font=`500 30px ${F}`; g.fillText(nick,R,fy-68);
   return cv;
 }
 function shareCard(){
@@ -1220,8 +1245,9 @@ document.addEventListener("touchend",e=>{
 /* ═══ північ ═══ */
 function checkDate(){
   if($("#app").hidden) return;
-  if(curDate!==today()){ curDate=today(); $("#date").textContent=headDate(); tab(0); drawGrid(); setTimeout(morning,300); }
+  if(curDate!==today()){ curDate=today(); $("#date").innerHTML=headDate(); tab(0); drawGrid(); setTimeout(morning,300); }
 }
+addEventListener("resize",()=>{ if(!$("#app").hidden) drawModes(); });
 document.addEventListener("visibilitychange",()=>{ if(!document.hidden){ checkDate(); pullCloud(); } });
 setInterval(()=>{ checkDate(); if(!document.hidden) pullExt(); },60000);
 
@@ -1414,7 +1440,7 @@ async function start(){
   await load(); curDate=today();
   $("#gate").classList.add("hide"); setTimeout(()=>$("#gate").remove(),500);
   $("#app").hidden=false; $("#who").textContent=nick[0].toUpperCase(); avatarDot();
-  $("#date").textContent=headDate();
+  $("#date").innerHTML=headDate();
   lastStreak=-1; drawGrid(); tab(0);
   try{ document.fonts?.load('800 100px "Inter"'); document.fonts?.load('500 40px "Inter"'); }catch(e){}
   setTimeout(morning,700);
